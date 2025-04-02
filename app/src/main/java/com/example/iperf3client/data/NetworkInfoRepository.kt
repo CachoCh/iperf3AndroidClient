@@ -7,10 +7,9 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.telephony.TelephonyManager
 
-class NetworkInfoRepository(context: Context) {
+class NetworkInfoRepository(private val context: Context) {
     private val connectivityManager =
         context.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
-    private val context = context
 
     fun getNetworkType(): String {
 
@@ -40,7 +39,7 @@ class NetworkInfoRepository(context: Context) {
                     TelephonyManager.NETWORK_TYPE_EDGE -> return "EDGE"
                     TelephonyManager.NETWORK_TYPE_CDMA -> return "CDMA"
                     TelephonyManager.NETWORK_TYPE_1xRTT -> return "1xRTT"
-                    TelephonyManager.NETWORK_TYPE_IDEN -> return ""
+                    //TelephonyManager.NETWORK_TYPE_IDEN -> return ""
                     TelephonyManager.NETWORK_TYPE_GSM -> return "GSM"
                     TelephonyManager.NETWORK_TYPE_UMTS -> return "UMTS"
                     TelephonyManager.NETWORK_TYPE_EVDO_0 -> return "EVDO_0"

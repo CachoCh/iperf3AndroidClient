@@ -78,13 +78,6 @@ fun IperfApp(
 
 ) {
     getContext()
-
-    // Get current back stack entry
-    val backStackEntry by navController.currentBackStackEntryAsState()
-    // Get the name of the current screen
-    val currentScreen = IperfScreen.valueOf(
-        backStackEntry?.destination?.route ?: IperfScreen.Start.name
-    )
     NavigationDrawer(navController, testViewModel)
 }
 
@@ -146,20 +139,19 @@ fun Navigation(
                 onItemClick = {
                         if (it != null) {
                             testVM.getTest(it)
+                            testVM.clearTestScreen()
                         }
                     navController.navigate(IperfScreen.NewTest.name)
                 },
                 onRunTestClicked ={ server, port, duration, interval, reverse ->
-                        if (port != null) {
-                            if (server != null) {
-                                if (duration != null) {
-                                    if (interval != null) {
-                                        if (reverse != null) {
-                                            testVM.runIperfTest(server, port, duration, interval, reverse)
-                                        }
-                                    }
-                                }
-                            }
+                        if (port != null && server != null && duration != null && interval != null && reverse != null) {
+                            testVM.runIperfTest(
+                                server,
+                                port,
+                                duration,
+                                interval,
+                                reverse
+                            )
                         }
                 },
                 modifier = Modifier
@@ -246,10 +238,9 @@ fun NavigationDrawer(navController: NavHostController, testViewModel: TestViewMo
                                 IperfScreen.SavedTests -> testViewModel.getTests()
                                 IperfScreen.NewTest -> testViewModel.resetTestConfig()
                                 IperfScreen.Measurements -> testViewModel.getExecutedTests()
-                                //IperfScreen.RunningTest -> testViewModel.testResults = MutableStateFlow(listOf<String>()).asStateFlow()
-                                /*IperfScreen.Start -> //TODO
-                                 //TODO()*/
-                                else -> {}
+                                IperfScreen.RunningTest -> TODO() //testViewModel.testResults = MutableStateFlow(listOf<String>()).asStateFlow()
+                                IperfScreen.Start -> TODO()
+                                //else -> {}
                             }
                             navController.navigate(item.screen.name)
 
@@ -302,11 +293,8 @@ fun NavigationDrawer(navController: NavHostController, testViewModel: TestViewMo
                 )
             }
         ) {
-
                 innerPadding ->
             Navigation(navController, innerPadding, testViewModel)
-            //val testViewModel = TestViewModel(LocalContext.current)
-            //navigation ( navController)
         }
     }
 }
@@ -317,7 +305,15 @@ fun NavigationDrawer(navController: NavHostController, testViewModel: TestViewMo
 private fun cancelOrderAndNavigateToStart(
     navController: NavHostController
 ) {
-    //viewModel.resetOrder()
     navController.popBackStack(IperfScreen.Start.name, inclusive = false)
 }
 
+@Composable
+private fun getCurrentScreen(navController : NavHostController): IperfScreen {
+    // Get current back stack entry
+    val backStackEntry by navController.currentBackStackEntryAsState()
+    // Get the name of the current screen
+    return IperfScreen.valueOf(
+        backStackEntry?.destination?.route ?: IperfScreen.Start.name
+    )
+}

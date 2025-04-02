@@ -1,6 +1,7 @@
 package com.example.iperf3client.ui
 
 import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -32,12 +33,17 @@ fun SavedTestsScreen(
     modifier: Modifier = Modifier,
     onCancelButtonClicked: () -> Unit,
     onItemClick: (id: Int?) -> Unit,
-    onRunTestClicked: (server: String?,
-                       port: Int?,
-                       duration: Int?,
-                       interval: Int?,
-                       reverse: Boolean?) -> Unit,
+    onRunTestClicked: (
+        server: String?,
+        port: Int?,
+        duration: Int?,
+        interval: Int?,
+        reverse: Boolean?
+    ) -> Unit
 ) {
+    BackHandler {
+        testViewModel.getTests()
+    }
     val testListState by testViewModel.testList.collectAsState()
     Log.wtf("CACHO", "SavedTestsScreen:testListState.size: ${testListState.size}")
     Column(
@@ -63,9 +69,11 @@ fun SavedTestsScreen(
                             Text(text = "${item.server}: ${item.port}")
                             Text(text = if (item.reverse) "Download" else "Upload")
                         }
-                        Column(modifier = Modifier.weight(1f),
+                        Column(
+                            modifier = Modifier.weight(1f),
                             verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally) {
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
                             IconButton(
                                 onClick = {
                                     onRunTestClicked(
@@ -82,6 +90,7 @@ fun SavedTestsScreen(
                                     contentDescription = null
                                 )
                             }
+
                         }
                     }
 

@@ -1,5 +1,10 @@
 package com.example.iperf3client.ui
 
+//import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLineSpec
+//import com.patrykandpatrick.vico.compose.common.of
+//import com.patrykandpatrick.vico.compose.common.shader.color
+//import com.patrykandpatrick.vico.core.common.Dimensions
+//common.shader.DynamicShader
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,8 +15,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,42 +33,22 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.core.text.isDigitsOnly
-import com.example.iperf3client.R
-import android.graphics.Typeface
 import com.example.iperf3client.viewmodels.TestViewModel
 import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
 import com.patrykandpatrick.vico.compose.cartesian.axis.rememberAxisLabelComponent
 import com.patrykandpatrick.vico.compose.cartesian.axis.rememberBottom
 import com.patrykandpatrick.vico.compose.cartesian.axis.rememberStart
 import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLineCartesianLayer
-//import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLineSpec
 import com.patrykandpatrick.vico.compose.cartesian.rememberCartesianChart
 import com.patrykandpatrick.vico.compose.cartesian.rememberVicoScrollState
-import com.patrykandpatrick.vico.compose.common.component.rememberShapeComponent
-import com.patrykandpatrick.vico.compose.common.component.rememberTextComponent
-//import com.patrykandpatrick.vico.compose.common.of
-import com.patrykandpatrick.vico.compose.common.rememberHorizontalLegend
-import com.patrykandpatrick.vico.core.common.LegendItem
-import com.patrykandpatrick.vico.compose.common.rememberVerticalLegend
-//import com.patrykandpatrick.vico.compose.common.shader.color
-import com.patrykandpatrick.vico.compose.common.vicoTheme
 import com.patrykandpatrick.vico.core.cartesian.AutoScrollCondition
-import com.patrykandpatrick.vico.core.cartesian.CartesianDrawingContext
-import com.patrykandpatrick.vico.core.cartesian.CartesianMeasuringContext
 import com.patrykandpatrick.vico.core.cartesian.Scroll
 import com.patrykandpatrick.vico.core.cartesian.axis.HorizontalAxis
 import com.patrykandpatrick.vico.core.cartesian.axis.VerticalAxis
 import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
-//import com.patrykandpatrick.vico.core.common.Dimensions
-import com.patrykandpatrick.vico.core.common.HorizontalLegend
-import com.patrykandpatrick.vico.core.common.VerticalLegend
-//common.shader.DynamicShader
-import com.patrykandpatrick.vico.core.common.shape.Shape
 
 @Composable
 fun NewTestScreen(
@@ -73,8 +62,6 @@ fun NewTestScreen(
     val testUiState by testViewModel.uiState.collectAsState()
     val isTestRunningState by testViewModel.isIPerfTestRunning.collectAsState()
     val modelProducer by testViewModel.modelProducer.collectAsState()
-    val bandwidthArray by testViewModel.transferArray.collectAsState()
-    val transferArray by testViewModel.bwArray.collectAsState()
     val senderTransfer by testViewModel.enderTransfer.collectAsState()
     val senderBandwidth by testViewModel.senderBandwidth.collectAsState()
     val receiverTransfer by testViewModel.receiverTransfer.collectAsState()
@@ -90,8 +77,27 @@ fun NewTestScreen(
     Column(
         modifier = modifier.padding(horizontal = 5.dp, vertical = 10.dp)
     ) {
-        Text(text = "Test: ${testUiState.tid ?: "New"}")
-
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(text = "Test: ${testUiState.tid ?: "New"}", modifier = Modifier
+                .weight(7f))
+            IconButton(modifier = Modifier
+                .weight(1f),
+                enabled = testUiState.tid!=null,
+                onClick = {
+                    testViewModel.deleteTest(testUiState)
+                    testViewModel.getTests()
+                    //testUiState.tid=null
+                }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = null
+                )
+            }
+        }
         Row(
             //modifier = Modifier.fillMaxWidth().padding(5.dp),
             horizontalArrangement = Arrangement.SpaceEvenly,
@@ -225,7 +231,7 @@ fun NewTestScreen(
         chart(modelProducer)
 
         Spacer(Modifier.height(10.dp))
-        
+
         Row() {
             Text("Sender:", modifier = Modifier.weight(1f))
             Text("Transfer \n$senderTransfer", modifier = Modifier.weight(2f))
@@ -245,38 +251,38 @@ fun chart(modelProducer: CartesianChartModelProducer) {
     CartesianChartHost(
         modifier = Modifier,
         chart =
-        rememberCartesianChart(
-            rememberLineCartesianLayer(),
-               /* listOf(
-                    rememberLineSpec(
-                        DynamicShader.color(Color.Green)
-                    ),
-                    rememberLineSpec(DynamicShader.color(Color.Blue))
-                )
-            ),*/
-            startAxis = VerticalAxis.rememberStart(label = rememberAxisLabelComponent(color = Color.Green)),
-            //legend = rememberLegend(),
-            /*endAxis = rememberEndAxis(
-                label = rememberAxisLabelComponent(color = Color.Blue)
-            ),*/
-            bottomAxis = HorizontalAxis.rememberBottom(),
+            rememberCartesianChart(
+                rememberLineCartesianLayer(),
+                /* listOf(
+                     rememberLineSpec(
+                         DynamicShader.color(Color.Green)
+                     ),
+                     rememberLineSpec(DynamicShader.color(Color.Blue))
+                 )
+             ),*/
+                startAxis = VerticalAxis.rememberStart(label = rememberAxisLabelComponent(color = Color.Green)),
+                //legend = rememberLegend(),
+                /*endAxis = rememberEndAxis(
+                    label = rememberAxisLabelComponent(color = Color.Blue)
+                ),*/
+                bottomAxis = HorizontalAxis.rememberBottom(),
 
-            /*decorations =
-            listOf(
-                rememberHorizontalLine(
-                    y = { 2f },
-                    line = rememberLineComponent(color = Color.Red, thickness = 2.dp),
-                    labelComponent =
-                    rememberTextComponent(Color.Red, padding = Dimensions.of(horizontal = 8.dp)),
-                ),
-                rememberHorizontalLine(
-                    y = { 3f },
-                    line = rememberLineComponent(color = Color.Yellow, thickness = 2.dp),
-                    labelComponent =
-                    rememberTextComponent(Color.Yellow, padding = Dimensions.of(horizontal = 8.dp)),
-                )
-            ),*/
-        ),
+                /*decorations =
+                listOf(
+                    rememberHorizontalLine(
+                        y = { 2f },
+                        line = rememberLineComponent(color = Color.Red, thickness = 2.dp),
+                        labelComponent =
+                        rememberTextComponent(Color.Red, padding = Dimensions.of(horizontal = 8.dp)),
+                    ),
+                    rememberHorizontalLine(
+                        y = { 3f },
+                        line = rememberLineComponent(color = Color.Yellow, thickness = 2.dp),
+                        labelComponent =
+                        rememberTextComponent(Color.Yellow, padding = Dimensions.of(horizontal = 8.dp)),
+                    )
+                ),*/
+            ),
         modelProducer = modelProducer,
         scrollState = rememberVicoScrollState(
             scrollEnabled = true,
@@ -286,29 +292,4 @@ fun chart(modelProducer: CartesianChartModelProducer) {
         ),
         //runInitialAnimation = true
     )
-
 }
-
-/*@Composable
-fun rememberLegend(): HorizontalLegend<CartesianMeasuringContext, CartesianDrawingContext> {
-    val chartColors = listOf(Color.Green, Color.Blue)
-    return rememberHorizontalLegend<CartesianMeasuringContext, CartesianDrawingContext>(
-        items =
-        chartColors.mapIndexed { index, chartColor ->
-            LegendItem(
-                icon = rememberShapeComponent(Shape.Pill, chartColor),
-                label =
-                rememberTextComponent(
-                    color = vicoTheme.textColor,
-                    textSize = 12.sp,
-                    typeface = Typeface.MONOSPACE,
-                ),
-                labelText = stringResource(R.string.MbitsPsec, R.string.MBytes, index + 1),
-            )
-        },
-        iconSize = 8.dp,
-        iconPadding = 8.dp,
-        spacing = 4.dp,
-        padding = Dimensions.of(top = 8.dp),
-    )
-}*/

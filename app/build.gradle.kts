@@ -1,3 +1,6 @@
+import org.gradle.api.JavaVersion.VERSION_11
+import org.gradle.kotlin.dsl.androidTestImplementation
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -29,14 +32,18 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = VERSION_11
+        targetCompatibility = VERSION_11
     }
     kotlinOptions {
         jvmTarget = "11"
     }
     buildFeatures {
         compose = true
+    }
+
+    testOptions {
+        unitTests.isReturnDefaultValues = true
     }
 }
 
@@ -56,6 +63,7 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:2.8.9")
 
     implementation("com.google.android.gms:play-services-location:21.3.0")
+    testImplementation("androidx.test:runner:1.6.1")
 
     val room_version = "2.6.1"
     implementation("androidx.room:room-runtime:$room_version")
@@ -73,6 +81,7 @@ dependencies {
 
 
     testImplementation(libs.junit)
+    testImplementation("org.robolectric:robolectric:4.13")
 
 ///
     androidTestImplementation(libs.androidx.junit)
@@ -81,6 +90,30 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+
+    testImplementation("androidx.test:core:1.6.1")
+    testImplementation("org.mockito:mockito-junit-jupiter:5.2.0") //Optional
+
+
+    // MockK for unit testing
+    testImplementation("io.mockk:mockk:1.13.7")
+
+    testImplementation("androidx.arch.core:core-testing:2.2.0")
+    testImplementation("app.cash.turbine:turbine:1.0.0")
+    //testImplementation("androidx.test:runner:1.6.2")
+
+
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.1")
+
+    testImplementation("org.mockito:mockito-junit-jupiter:5.2.0") //Optional
+    testImplementation("org.mockito:mockito-core:5.2.0")
+
+    // Espresso
+// Core library
+/*    androidTestImplementation("androidx.test.espresso:espresso-core:3.2.0")
+    androidTestImplementation("androidx.test:runner:1.6.2")
+    androidTestImplementation ("androidx.test:rules:1.6.1")*/
 
 
     val vicoVersion = "2.1.1"
@@ -94,4 +127,7 @@ dependencies {
 
     implementation("com.synaptic-tools:iperf:1.0.0")
     implementation ("androidx.work:work-runtime-ktx:2.10.0")
+
+
+
 }

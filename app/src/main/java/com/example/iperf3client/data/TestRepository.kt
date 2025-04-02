@@ -1,16 +1,9 @@
 package com.example.iperf3client.data
 
-import android.content.Context
 
+class TestRepository(database: TestDatabase) {
 
-class TestRepository(application: Context) {
-
-    private var testDao: TestDao
-    private val database = TestDatabase.getInstance(application)
-
-    init {
-        testDao = database.testDao()
-    }
+    var testDao: TestDao = database.testDao()
     suspend fun createTest(test : TestUiState) : TestUiState {
         testDao.insertAll(test)
         return getLastTests()//TODO: check if there is a better way to do this
@@ -38,9 +31,9 @@ class TestRepository(application: Context) {
 
     companion object {
         @Volatile private var instance: TestRepository? = null
-        fun getInstance(application: Context) =
+        fun getInstance(database: TestDatabase) =
             instance ?: synchronized(this) {
-                instance ?: TestRepository(application).also { instance = it }
+                instance ?: TestRepository(database).also { instance = it }
             }
     }
 }

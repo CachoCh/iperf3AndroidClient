@@ -9,6 +9,7 @@ import com.example.iperf3client.data.ExecutedTestConfig
 import com.example.iperf3client.data.LocationRepository
 import com.example.iperf3client.data.NetworkInfoRepository
 import com.example.iperf3client.data.ResultsRepository
+import com.example.iperf3client.data.TestDatabase
 import com.example.iperf3client.data.TestRepository
 import com.example.iperf3client.data.TestUiState
 import com.example.iperf3client.utils.IpersOutputParser
@@ -16,6 +17,7 @@ import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
 import com.patrykandpatrick.vico.core.cartesian.data.lineSeries
 import com.synaptictools.iperf.IPerf
 import com.synaptictools.iperf.IPerfConfig
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,10 +32,11 @@ import java.util.Calendar
 import java.util.Locale
 
 class TestViewModel(applicationContext: Context) : ViewModel() {
-
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
+    private val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default
 
     private val resultBuilder: StringBuilder? = StringBuilder()
-    private val repository = TestRepository.getInstance(applicationContext)
+    private val repository = TestRepository.getInstance(TestDatabase.getInstance(applicationContext))
     private val resultsRepository = ResultsRepository.getInstance(applicationContext)
     private val locationRepository = LocationRepository.getInstance(applicationContext)
     private val networkInfoRepository = NetworkInfoRepository.getInstance(applicationContext)
@@ -78,6 +81,18 @@ class TestViewModel(applicationContext: Context) : ViewModel() {
 
     private var resultID: Long = 0
 
+    fun clearTestScreen(){
+        if (!_isIPerfTestRunningFlow.value) {
+            _senderTransfer.value = ""
+            _senderBandwidth.value = ""
+            _receiverTransfer.value = ""
+            _receiverBandwidth.value = ""
+            _transferArray.value = listOf(0F)
+            _bwArray.value = listOf(0F)
+            modelProducer(_bwArray.value, _transferArray.value)
+        }
+    }
+
     /**
      *
      */
@@ -89,7 +104,7 @@ class TestViewModel(applicationContext: Context) : ViewModel() {
         reverse: Boolean,
     ) {
         _uiStateFlow.value = TestUiState(
-            _uiStateFlow.value.tid ?: null,
+            _uiStateFlow.value.tid,
             server,
             port,
             duration,
@@ -101,7 +116,6 @@ class TestViewModel(applicationContext: Context) : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) { //this: CoroutineScope
             if (_uiStateFlow.value.tid == null) {
                 _uiStateFlow.value = repository.createTest(_uiStateFlow.value)
-
             } else {
                 repository.updateTest(_uiStateFlow.value)
             }
@@ -223,8 +237,6 @@ class TestViewModel(applicationContext: Context) : ViewModel() {
                             }
                         } catch (e: Exception) {
                             println("CACHO: update -> exception   ${e.toString()}")
-                        } finally {
-
                         }
                     }
                     error { e ->
@@ -253,17 +265,17 @@ class TestViewModel(applicationContext: Context) : ViewModel() {
                  */
 
     private fun buildAndSaveMeasurmment(text: String, config: IPerfConfig) {
-        if (text?.contains(" receiver") == true || text?.contains(" sender") == true) {
+        if (text.contains(" receiver") == true || text.contains(" sender") == true) {
             var transfer = ""
             var bandwidth = ""
-            if (text?.contains(" sender") == true) {
+            if (text.contains(" sender") == true) {
                 _senderTransfer.value = IpersOutputParser.getFinalTransferOrBwValues(text, "transfer")
                 _senderBandwidth.value = IpersOutputParser.getFinalTransferOrBwValues(text, "bw")
                 if (!config.download){
                     transfer = _senderTransfer.value
                     bandwidth = _senderBandwidth.value
                 }
-            } else  if (text?.contains(" receiver") == true){
+            } else  if (text.contains(" receiver") == true){
                 _receiverTransfer.value = IpersOutputParser.getFinalTransferOrBwValues(text, "transfer")
                 _receiverBandwidth.value = IpersOutputParser.getFinalTransferOrBwValues(text, "bw")
                 if (config.download){
@@ -308,26 +320,26 @@ class TestViewModel(applicationContext: Context) : ViewModel() {
     }
 
     private fun newTestConfig(): TestUiState {
-        return TestUiState(null, "1111.1111.1111.1111", 1000, 10, 1, true, "CHANGE ME", false)
+        return TestUiState(null, "111.111.111.111", 1000, 10, 1, true, "CHANGE ME", false)
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////
     private fun saveResultsTestConfig(testConfig: ExecutedTestConfig) {
-        viewModelScope.launch(Dispatchers.IO) { //this: CoroutineScope
+        viewModelScope.launch(ioDispatcher) { //this: CoroutineScope
             resultID = resultsRepository.createTestConfig(testConfig)
             System.out.println("CACHO: $resultID")
         }
     }
 
     private fun updateResultsTestConfig(testConfig: ExecutedTestConfig) {
-        viewModelScope.launch(Dispatchers.IO) { //this: CoroutineScope
+        viewModelScope.launch(ioDispatcher) { //this: CoroutineScope
             resultsRepository.updateTestConfigTestConfig(testConfig)
         }
     }
 
     private fun saveMeasurement(resultID: Long, measurment: String) {
 
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(ioDispatcher) {
             println("CACHO: ${networkInfoRepository.getNetworkType()}")
             println("CACHO: ${locationFlow.value.latitude}  ${locationFlow.value.longitude}  ${locationFlow.value.altitude}")
             resultsRepository.addResult(
@@ -342,20 +354,20 @@ class TestViewModel(applicationContext: Context) : ViewModel() {
     }
 
     fun getExecutedTests() {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(ioDispatcher) {
             _executedTestsList.value = resultsRepository.getExecutedTests()
         }
     }
 
     fun getExecutedTestResults(testID: Int?) {
         _testResults.value = listOf<String>()
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(ioDispatcher) {
             _testResults.value = resultsRepository.getExecutedTestResults(testID)
         }
     }
 
     fun deleteExecutedTestsWithResults(executedTestId: ExecutedTestConfig) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(ioDispatcher) {
             resultsRepository.deleteExecutedTestsWithResults(executedTestId)
             _executedTestsList.value = resultsRepository.getExecutedTests()
         }
@@ -363,16 +375,14 @@ class TestViewModel(applicationContext: Context) : ViewModel() {
 
     ////////////////////////////////////////////////////////////////////////
     private fun getCurrentLocation() {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(ioDispatcher) {
             locationRepository.getCurrentLocation()
         }
     }
 
 
-    ////////////////
-
     private fun modelProducer(value: List<Float>, value1: List<Float>) {
-        viewModelScope.launch(Dispatchers.Default) {
+        viewModelScope.launch(defaultDispatcher) {
             _modelProducer.value.runTransaction {
                 lineSeries {
                     series(value)
