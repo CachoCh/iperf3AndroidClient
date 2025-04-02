@@ -15,16 +15,26 @@ abstract class TestDatabase : RoomDatabase() {
 
     companion object {
         private var instance: TestDatabase? = null
+        var needsInitialization: Boolean = true
+
+        @Synchronized
+        fun exists():Boolean {
+           return instance != null
+        }
 
         @Synchronized
         fun getInstance(ctx: Context): TestDatabase {
-            if(instance == null)
-                instance = Room.databaseBuilder(ctx.applicationContext, TestDatabase::class.java,
-                    "iperf3_database")
+            if(instance == null) {
+                needsInitialization = true
+                instance = Room.databaseBuilder(
+                    ctx.applicationContext, TestDatabase::class.java,
+                    "iperf3_database"
+                )
                     .fallbackToDestructiveMigration()
                     .addCallback(roomCallback)
                     .build()
-
+            }
+            needsInitialization = false
             return instance!!
 
         }

@@ -19,6 +19,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityCompat.requestPermissions
+import com.example.iperf3client.data.TestDatabase
 import com.example.iperf3client.ui.ui.theme.IPerf3ClientTheme
 import com.example.iperf3client.viewmodels.TestViewModel
 
@@ -28,7 +29,9 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             IPerf3ClientTheme {
-                val testViewModel = TestViewModel(LocalContext.current)
+                val testDB = TestDatabase.getInstance(applicationContext)
+                val testViewModel = TestViewModel(LocalContext.current, testDB)
+                if (TestDatabase.needsInitialization == true) initializeDB(testViewModel)
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -43,6 +46,43 @@ class MainActivity : ComponentActivity() {
         if (shouldAskPermissions()) {
             askPermissions(this);
         }
+    }
+}
+
+private fun initializeDB(testViewModel : TestViewModel){
+    if(TestDatabase.exists()) {
+        testViewModel.saveUpdateTest(
+            "paris.bbr.iperf.bytel.fr",
+            9220,
+            100,
+            1,
+            true
+        )
+
+        testViewModel.saveUpdateTest(
+            "paris.bbr.iperf.bytel.fr",
+            9220,
+            100,
+            1,
+            false
+        )
+
+        testViewModel.saveUpdateTest(
+            "ch.iperf.014.fr",
+            15317,
+            100,
+            1,
+            true
+        )
+
+        testViewModel.saveUpdateTest(
+            "ch.iperf.014.fr",
+            15317,
+            100,
+            1,
+            false
+        )
+        TestDatabase.needsInitialization = false
     }
 }
 

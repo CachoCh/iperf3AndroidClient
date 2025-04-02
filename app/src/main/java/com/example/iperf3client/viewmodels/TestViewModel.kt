@@ -31,12 +31,12 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
-class TestViewModel(applicationContext: Context) : ViewModel() {
+class TestViewModel(applicationContext: Context, testDB : TestDatabase) : ViewModel() {
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
     private val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default
 
     private val resultBuilder: StringBuilder? = StringBuilder()
-    private val repository = TestRepository.getInstance(TestDatabase.getInstance(applicationContext))
+    private val repository = TestRepository.getInstance(testDB)
     private val resultsRepository = ResultsRepository.getInstance(applicationContext)
     private val locationRepository = LocationRepository.getInstance(applicationContext)
     private val networkInfoRepository = NetworkInfoRepository.getInstance(applicationContext)
