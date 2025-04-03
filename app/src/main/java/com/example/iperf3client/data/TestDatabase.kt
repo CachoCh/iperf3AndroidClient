@@ -15,7 +15,6 @@ abstract class TestDatabase : RoomDatabase() {
 
     companion object {
         private var instance: TestDatabase? = null
-        var needsInitialization: Boolean = false
 
         @Synchronized
         fun exists():Boolean {
@@ -25,7 +24,6 @@ abstract class TestDatabase : RoomDatabase() {
         @Synchronized
         fun getInstance(ctx: Context): TestDatabase {
             if(instance == null) {
-                needsInitialization = true
                 instance = Room.databaseBuilder(
                     ctx.applicationContext, TestDatabase::class.java,
                     "iperf3_database"
@@ -35,7 +33,6 @@ abstract class TestDatabase : RoomDatabase() {
                     .build()
             }
             return instance!!
-
         }
 
         private val roomCallback = object : Callback() {

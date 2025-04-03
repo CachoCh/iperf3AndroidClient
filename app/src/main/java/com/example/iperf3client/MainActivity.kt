@@ -26,12 +26,15 @@ import com.example.iperf3client.viewmodels.TestViewModel
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         enableEdgeToEdge()
         setContent {
+            val testViewModel = TestViewModel(
+                LocalContext.current,
+                TestDatabase.getInstance(applicationContext)
+            )
             IPerf3ClientTheme {
-
-                val testViewModel = TestViewModel(LocalContext.current, TestDatabase.getInstance(applicationContext))
-                if (TestDatabase.needsInitialization == true) initializeDB(testViewModel)
+                testViewModel.getTestCount()
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -42,48 +45,50 @@ class MainActivity : ComponentActivity() {
                     IperfApp(testViewModel)
                 }
             }
+            addSampleTestsToDB(testViewModel)
         }
         if (shouldAskPermissions()) {
             askPermissions(this);
         }
+
     }
 }
 
-private fun initializeDB(testViewModel: TestViewModel) {
+private fun addSampleTestsToDB(testViewModel: TestViewModel) {
 
-    testViewModel.saveNewTest(
-        "paris.bbr.iperf.bytel.fr",
-        9220,
-        100,
-        1,
-        true
-    )
+    if (testViewModel.testCount.value == 0) {
+        testViewModel.saveNewTest(
+            "paris.bbr.iperf.bytel.fr",
+            9220,
+            100,
+            1,
+            true
+        )
 
-    testViewModel.saveNewTest(
-        "paris.bbr.iperf.bytel.fr",
-        9221,
-        100,
-        1,
-        false
-    )
+        testViewModel.saveNewTest(
+            "paris.bbr.iperf.bytel.fr",
+            9221,
+            100,
+            1,
+            false
+        )
 
-    testViewModel.saveNewTest(
-        "ch.iperf.014.fr",
-        15317,
-        100,
-        1,
-        true
-    )
+        testViewModel.saveNewTest(
+            "ch.iperf.014.fr",
+            15317,
+            100,
+            1,
+            true
+        )
 
-    testViewModel.saveNewTest(
-        "ch.iperf.014.fr",
-        15318,
-        100,
-        1,
-        false
-    )
-    TestDatabase.needsInitialization = false
-
+        testViewModel.saveNewTest(
+            "ch.iperf.014.fr",
+            15318,
+            100,
+            1,
+            false
+        )
+    }
 }
 
 private fun shouldAskPermissions(): Boolean {

@@ -26,6 +26,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.descriptors.PrimitiveKind
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -49,6 +50,7 @@ class TestViewModel(applicationContext: Context, testDB : TestDatabase) : ViewMo
     private var _isIPerfTestRunningFlow = MutableStateFlow(false)
     private var _testResults = MutableStateFlow(listOf<String>())
     private val _testListFlow = MutableStateFlow(listOf<TestUiState>())
+    private val _testCountFlow = MutableStateFlow(0)
     private val _modelProducer = MutableStateFlow(modelProd)
     private val _senderTransfer = MutableStateFlow("")
     private val _senderBandwidth = MutableStateFlow("")
@@ -62,6 +64,7 @@ class TestViewModel(applicationContext: Context, testDB : TestDatabase) : ViewMo
     var isIPerfTestRunning: StateFlow<Boolean> = _isIPerfTestRunningFlow.asStateFlow()
     var iPerfRequestResult: StateFlow<String> = _iPerfRequestResultFlow.asStateFlow()
     var testList: StateFlow<List<TestUiState>> = _testListFlow.asStateFlow()
+    var testCount: StateFlow<Int> =_testCountFlow.asStateFlow()
     var testResults: StateFlow<List<String>> = _testResults.asStateFlow()
     private val locationFlow = locationRepository.locationFlow
     val transferArray: StateFlow<List<Float>> = _transferArray.asStateFlow()
@@ -74,7 +77,6 @@ class TestViewModel(applicationContext: Context, testDB : TestDatabase) : ViewMo
     var senderBandwidth = _senderBandwidth.asStateFlow()
     var receiverTransfer = _receiverTransfer.asStateFlow()
     var receiverBandwidth = _receiverBandwidth.asStateFlow()
-
 
     private var filesDir: File = applicationContext.applicationContext.filesDir
     private lateinit var iperfJob: Job
@@ -156,6 +158,12 @@ class TestViewModel(applicationContext: Context, testDB : TestDatabase) : ViewMo
             _testListFlow.value = repository.getTests()
             Log.wtf("CACHO", "TestViewModel:getTests ${_testListFlow.value.size}")
 
+        }
+    }
+
+    fun getTestCount() {
+        viewModelScope.launch(Dispatchers.IO) { //this: CoroutineScope
+            _testCountFlow.value = repository.getTestCount()
         }
     }
 

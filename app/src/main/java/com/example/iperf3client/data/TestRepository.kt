@@ -1,5 +1,8 @@
 package com.example.iperf3client.data
 
+import kotlinx.serialization.descriptors.PrimitiveKind
+import kotlinx.serialization.encoding.Encoder
+
 
 class TestRepository(database: TestDatabase) {
 
@@ -19,6 +22,9 @@ class TestRepository(database: TestDatabase) {
 
     suspend fun getTests(): List<TestUiState> {
         return testDao.getAll()
+    }
+    suspend fun getTestCount(): Int {
+        return testDao.getTestCount()
     }
 
     fun getTest(testID: Int) : TestUiState {
