@@ -238,9 +238,9 @@ fun NavigationDrawer(navController: NavHostController, testViewModel: TestViewMo
                                 IperfScreen.SavedTests -> testViewModel.getTests()
                                 IperfScreen.NewTest -> testViewModel.resetTestConfig()
                                 IperfScreen.Measurements -> testViewModel.getExecutedTests()
-                                IperfScreen.RunningTest -> TODO() //testViewModel.testResults = MutableStateFlow(listOf<String>()).asStateFlow()
-                                IperfScreen.Start -> TODO()
-                                //else -> {}
+                                IperfScreen.RunningTest -> {} //TODO() //testViewModel.testResults = MutableStateFlow(listOf<String>()).asStateFlow()
+                                IperfScreen.Start -> {} //TODO()
+                                else -> {}
                             }
                             navController.navigate(item.screen.name)
 

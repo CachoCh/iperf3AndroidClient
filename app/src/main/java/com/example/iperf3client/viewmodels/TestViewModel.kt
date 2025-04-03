@@ -122,6 +122,29 @@ class TestViewModel(applicationContext: Context, testDB : TestDatabase) : ViewMo
         }
     }
 
+
+    fun saveNewTest(
+        server: String,
+        port: Int,
+        duration: Int,
+        interval: Int,
+        reverse: Boolean,
+    ) {
+        val test = TestUiState(
+            null,
+            server,
+            port,
+            duration,
+            interval,
+            reverse,
+            "",
+            true
+        )
+        viewModelScope.launch(Dispatchers.IO) { //this: CoroutineScope
+                _uiStateFlow.value = repository.createTest(test)
+        }
+    }
+
     fun deleteTest(test: TestUiState) {
         viewModelScope.launch(Dispatchers.IO) { //this: CoroutineScope
             repository.deleteTest(test)

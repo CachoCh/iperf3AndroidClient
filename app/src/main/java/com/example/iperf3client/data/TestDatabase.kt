@@ -15,7 +15,7 @@ abstract class TestDatabase : RoomDatabase() {
 
     companion object {
         private var instance: TestDatabase? = null
-        var needsInitialization: Boolean = true
+        var needsInitialization: Boolean = false
 
         @Synchronized
         fun exists():Boolean {
@@ -34,7 +34,6 @@ abstract class TestDatabase : RoomDatabase() {
                     .addCallback(roomCallback)
                     .build()
             }
-            needsInitialization = false
             return instance!!
 
         }

@@ -29,8 +29,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             IPerf3ClientTheme {
-                val testDB = TestDatabase.getInstance(applicationContext)
-                val testViewModel = TestViewModel(LocalContext.current, testDB)
+
+                val testViewModel = TestViewModel(LocalContext.current, TestDatabase.getInstance(applicationContext))
                 if (TestDatabase.needsInitialization == true) initializeDB(testViewModel)
                 // A surface container using the 'background' color from the theme
                 Surface(
@@ -49,41 +49,41 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-private fun initializeDB(testViewModel : TestViewModel){
-    if(TestDatabase.exists()) {
-        testViewModel.saveUpdateTest(
-            "paris.bbr.iperf.bytel.fr",
-            9220,
-            100,
-            1,
-            true
-        )
+private fun initializeDB(testViewModel: TestViewModel) {
 
-        testViewModel.saveUpdateTest(
-            "paris.bbr.iperf.bytel.fr",
-            9220,
-            100,
-            1,
-            false
-        )
+    testViewModel.saveNewTest(
+        "paris.bbr.iperf.bytel.fr",
+        9220,
+        100,
+        1,
+        true
+    )
 
-        testViewModel.saveUpdateTest(
-            "ch.iperf.014.fr",
-            15317,
-            100,
-            1,
-            true
-        )
+    testViewModel.saveNewTest(
+        "paris.bbr.iperf.bytel.fr",
+        9221,
+        100,
+        1,
+        false
+    )
 
-        testViewModel.saveUpdateTest(
-            "ch.iperf.014.fr",
-            15317,
-            100,
-            1,
-            false
-        )
-        TestDatabase.needsInitialization = false
-    }
+    testViewModel.saveNewTest(
+        "ch.iperf.014.fr",
+        15317,
+        100,
+        1,
+        true
+    )
+
+    testViewModel.saveNewTest(
+        "ch.iperf.014.fr",
+        15318,
+        100,
+        1,
+        false
+    )
+    TestDatabase.needsInitialization = false
+
 }
 
 private fun shouldAskPermissions(): Boolean {
@@ -91,7 +91,7 @@ private fun shouldAskPermissions(): Boolean {
 }
 
 //@TargetApi(23)
-fun askPermissions(myActivity : Activity) {
+fun askPermissions(myActivity: Activity) {
     val permissions = arrayOf(
         Manifest.permission.READ_EXTERNAL_STORAGE,
         Manifest.permission.WRITE_EXTERNAL_STORAGE,
@@ -103,7 +103,7 @@ fun askPermissions(myActivity : Activity) {
     requestPermissions(myActivity, permissions, requestCode)
 }
 
-private fun checkPermissions(context : Context){
+private fun checkPermissions(context: Context) {
     if (ActivityCompat.checkSelfPermission(
             context,
             Manifest.permission.ACCESS_FINE_LOCATION
