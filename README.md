@@ -21,7 +21,7 @@ In general, the app is capable of:
 
 This application does not share your personal data or geolocation, all work is offline.
 
-<img src='/metadata/en-US/images/running.png' width='200'/> <img src='/metadata/en-US/images/new_test.png' width='200'/> <img src='/metadata/en-US/images/fav.png.png' width='200'/>
+<img src='/metadata/en-US/images/running.png' width='200'/> <img src='/metadata/en-US/images/new_test.png' width='200'/> <img src='/metadata/en-US/images/fav.png' width='200'/>
  
 # Usage
 Starting your own server:
@@ -41,7 +41,8 @@ Server listening on 5201 (test #1)
 Servers iPerf3 servers will only allow one iPerf connection at a time. Multiple tests at the same time is not supported. If a test is in progress, the following message is displayed: "iperf3: error - the server is busy running a test. try again later"
 
 The Android iPerf3 client app comes with 4 presaved servers configured
-<img src='/metadata/en-US/images/fav.png'/>
+
+<img src='/metadata/en-US/images/fav.png' width='200'/>
 
 # Acknowledgments
 - The main authors of [iPerf3](https://iperf.fr/) are (in alphabetical order): Jon Dugan, Seth Elliott, Bruce A. Mah, Jeff Poskanzer, Kaustubh Prabhu. Additional code contributions have come from (also in alphabetical order): Mark Ashley, Aaron Brown, Aeneas Jaißle, Susant Sahani, Bruce Simpson, Brian Tierney.
