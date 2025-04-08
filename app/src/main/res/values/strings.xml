@@ -6,4 +6,6 @@
     <string name="running_test">Running Tests</string>
     <string name="MBytes">MBytes</string>
     <string name="MbitsPsec">Mbits/sec</string>
+    <string name="download">Download</string>
+    <string name="upload">Upload</string>
 </resources>

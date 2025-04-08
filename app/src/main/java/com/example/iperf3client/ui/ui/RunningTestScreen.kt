@@ -1,4 +1,4 @@
-package com.example.iperf3client.ui
+package com.example.iperf3client.ui.ui
 
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -26,7 +26,7 @@ fun RunningTestScreen(
     val testResults by testViewModel.testResults.collectAsState()
 
     //VerticalScrollingText(testResults)
-    resultsList(testResults)
+    ResultsList(testResults)
 
 }
 
@@ -38,7 +38,7 @@ fun VerticalScrollingText(testResults: List<String>) {
     )
 }
 @Composable
-fun resultsList(testResults: List<String>) {
+fun ResultsList(testResults: List<String>) {
     LazyColumn(
         modifier = Modifier.height(500.dp)
     ) {

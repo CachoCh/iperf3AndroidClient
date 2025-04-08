@@ -49,7 +49,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.iperf3client.ui.MeasurementsScreen
 import com.example.iperf3client.ui.NewTestScreen
-import com.example.iperf3client.ui.RunningTestScreen
+import com.example.iperf3client.ui.ui.RunningTestScreen
 import com.example.iperf3client.ui.SavedTestsScreen
 import com.example.iperf3client.ui.ui.WelcomeScreen
 import com.example.iperf3client.ui.ui.navigator.NavigationItems
@@ -105,7 +105,8 @@ fun Navigation(
                 },
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(dimensionResource(R.dimen.padding_medium))
+                    .padding(dimensionResource(R.dimen.padding_medium)),
+                testVM
             )
         }
         composable(route = IperfScreen.NewTest.name) {
