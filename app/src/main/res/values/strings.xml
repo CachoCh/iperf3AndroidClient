@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">iPerf3Client</string>
+    <string name="measurements">Measurements</string>
+    <string name="new_test">New Test</string>
+    <string name="saved_tests">Saved Tests</string>
+    <string name="running_test">Running Tests</string>
+    <string name="MBytes">MBytes</string>
+    <string name="MbitsPsec">Mbits/sec</string>
+    <string name="download">Download</string>
+    <string name="upload">Upload</string>
+</resources>
