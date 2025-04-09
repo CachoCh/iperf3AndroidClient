@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     id("com.google.devtools.ksp")
+    id("com.google.android.gms.oss-licenses-plugin")
 }
 
 android {
@@ -129,5 +130,5 @@ dependencies {
     implementation ("androidx.work:work-runtime-ktx:2.10.0")
 
 
-
+    implementation("com.google.android.gms:play-services-oss-licenses:17.1.0")
 }

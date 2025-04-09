@@ -5,3 +5,11 @@ plugins {
     alias(libs.plugins.kotlin.compose) apply false
     id("com.google.devtools.ksp") version "2.0.21-1.0.27" apply false
 }
+buildscript {
+    repositories {
+        google()  // maven { url("https://maven.google.com") } for Gradle <= 3
+    }
+    dependencies {
+        classpath("com.google.android.gms:oss-licenses-plugin:0.10.6")
+    }
+}
