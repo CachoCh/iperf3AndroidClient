@@ -6,7 +6,6 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     id("com.google.devtools.ksp")
-    id("com.google.android.gms.oss-licenses-plugin")
 }
 
 android {
@@ -46,12 +45,18 @@ android {
     testOptions {
         unitTests.isReturnDefaultValues = true
     }
+
+    android {
+        dependenciesInfo {
+            // Disables dependency metadata when building APKs (for IzzyOnDroid/F-Droid)
+            includeInApk = false
+            // Disables dependency metadata when building Android App Bundles (for Google Play)
+            includeInBundle = false
+        }
+    }
 }
 
 dependencies {
-
-
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -63,7 +68,6 @@ dependencies {
     implementation("androidx.navigation:navigation-runtime-android:2.9.0-alpha09")
     implementation("androidx.navigation:navigation-compose:2.8.9")
 
-    implementation("com.google.android.gms:play-services-location:21.3.0")
     testImplementation("androidx.test:runner:1.6.1")
 
     val room_version = "2.6.1"
@@ -92,10 +96,8 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-
     testImplementation("androidx.test:core:1.6.1")
     testImplementation("org.mockito:mockito-junit-jupiter:5.2.0") //Optional
-
 
     // MockK for unit testing
     testImplementation("io.mockk:mockk:1.13.7")
@@ -104,18 +106,10 @@ dependencies {
     testImplementation("app.cash.turbine:turbine:1.0.0")
     //testImplementation("androidx.test:runner:1.6.2")
 
-
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.1")
 
     testImplementation("org.mockito:mockito-junit-jupiter:5.2.0") //Optional
     testImplementation("org.mockito:mockito-core:5.2.0")
-
-    // Espresso
-// Core library
-/*    androidTestImplementation("androidx.test.espresso:espresso-core:3.2.0")
-    androidTestImplementation("androidx.test:runner:1.6.2")
-    androidTestImplementation ("androidx.test:rules:1.6.1")*/
-
 
     val vicoVersion = "2.1.1"
 
@@ -124,11 +118,7 @@ dependencies {
     implementation("com.patrykandpatrick.vico:compose-m3:$vicoVersion")
     implementation("com.patrykandpatrick.vico:compose-m2:$vicoVersion")
 
-
-
     implementation("com.synaptic-tools:iperf:1.0.0")
     implementation ("androidx.work:work-runtime-ktx:2.10.0")
 
-
-    implementation("com.google.android.gms:play-services-oss-licenses:17.1.0")
 }
