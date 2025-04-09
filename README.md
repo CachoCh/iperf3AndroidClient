@@ -21,7 +21,7 @@ In general, the app is capable of:
 
 This application does not share your personal data or geolocation, all work is offline.
 
-<img src='/fastlane/metadata/en-US/images/running.png' width='200'/> <img src='/fastlane/metadata/en-US/images/new_test.png' width='200'/> <img src='/fastlane/metadata/en-US/images/fav.png' width='200'/>
+<img src='/fastlane/metadata/android/en-US/images/running.png' width='200'/> <img src='/fastlane/metadata/android/en-US/images/new_test.png' width='200'/> <img src='/fastlane/metadata/android/en-US/images/fav.png' width='200'/>
  
 # Usage
 Starting your own server:
@@ -42,7 +42,7 @@ Servers iPerf3 servers will only allow one iPerf connection at a time. Multiple 
 
 The Android iPerf3 client app comes with 4 presaved servers configured
 
-<img src='/fastlane/metadata/en-US/images/fav.png' width='200'/>
+<img src='/fastlane/metadata/android/en-US/images/fav.png' width='200'/>
 
 # Acknowledgments
 - The main authors of [iPerf3](https://iperf.fr/) are (in alphabetical order): Jon Dugan, Seth Elliott, Bruce A. Mah, Jeff Poskanzer, Kaustubh Prabhu. Additional code contributions have come from (also in alphabetical order): Mark Ashley, Aaron Brown, Aeneas Jaißle, Susant Sahani, Bruce Simpson, Brian Tierney.
