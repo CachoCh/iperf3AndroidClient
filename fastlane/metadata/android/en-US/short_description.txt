@@ -1,0 +1,2 @@
+iPerf3 is a tool for active measurements of the maximum achievable bandwidth on IP networks.
+This app is a client for iPerf3 tests.

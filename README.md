@@ -1,6 +1,6 @@
 
 
-# iPerf3 Android client <img src='/metadata/en-US/images/logo.webp'/>
+# iPerf3 Android client <img src='/fastlane/metadata/android/en-US/images/icon.png'/>
 ## What is iPerf3 ?
 
 iPerf3 is a tool for active measurements of the maximum achievable bandwidth on IP networks. It supports tuning of various parameters related to timing, buffers and protocols (TCP, UDP, SCTP with IPv4 and IPv6). For each test it reports the bandwidth, loss, and other parameters.
@@ -21,7 +21,7 @@ In general, the app is capable of:
 
 This application does not share your personal data or geolocation, all work is offline.
 
-<img src='/metadata/en-US/images/running.png' width='200'/> <img src='/metadata/en-US/images/new_test.png' width='200'/> <img src='/metadata/en-US/images/fav.png' width='200'/>
+<img src='/fastlane/metadata/en-US/images/running.png' width='200'/> <img src='/fastlane/metadata/en-US/images/new_test.png' width='200'/> <img src='/fastlane/metadata/en-US/images/fav.png' width='200'/>
  
 # Usage
 Starting your own server:
@@ -42,7 +42,7 @@ Servers iPerf3 servers will only allow one iPerf connection at a time. Multiple 
 
 The Android iPerf3 client app comes with 4 presaved servers configured
 
-<img src='/metadata/en-US/images/fav.png' width='200'/>
+<img src='/fastlane/metadata/en-US/images/fav.png' width='200'/>
 
 # Acknowledgments
 - The main authors of [iPerf3](https://iperf.fr/) are (in alphabetical order): Jon Dugan, Seth Elliott, Bruce A. Mah, Jeff Poskanzer, Kaustubh Prabhu. Additional code contributions have come from (also in alphabetical order): Mark Ashley, Aaron Brown, Aeneas Jaißle, Susant Sahani, Bruce Simpson, Brian Tierney.
