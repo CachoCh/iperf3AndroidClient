@@ -42,7 +42,7 @@ Servers iPerf3 servers will only allow one iPerf connection at a time. Multiple 
 
 The Android iPerf3 client app comes with 4 presaved servers configured
 
-<img src='/fastlane/metadata/en-US/images/fav.png' width='200'/>
+<img src='./fastlane/metadata/android/en-US/images/fav.png' width='200'/>
 
 ## Available at:
 
