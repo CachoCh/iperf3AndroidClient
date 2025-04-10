@@ -21,7 +21,7 @@ In general, the app is capable of:
 
 This application does not share your personal data or geolocation, all work is offline.
 
-<img src='/fastlane/metadata/en-US/images/running.png' width='200'/> <img src='/fastlane/metadata/en-US/images/new_test.png' width='200'/> <img src='/fastlane/metadata/en-US/images/fav.png' width='200'/>
+<img src='/fastlane/metadata/android/en-US/images/running.png' width='200'/> <img src='/fastlane/metadata/android/en-US/images/new_test.png' width='200'/> <img src='/fastlane/metadata/android/en-US/images/fav.png' width='200'/>
  
 # Usage
 Starting your own server:
