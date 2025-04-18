@@ -1,6 +1,8 @@
 package com.example.iperf3client
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.os.Environment
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -47,12 +49,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.iperf3client.data.TestDatabase
 import com.example.iperf3client.ui.MeasurementsScreen
 import com.example.iperf3client.ui.NewTestScreen
-import com.example.iperf3client.ui.ui.RunningTestScreen
 import com.example.iperf3client.ui.SavedTestsScreen
+import com.example.iperf3client.ui.ui.RunningTestScreen
 import com.example.iperf3client.ui.ui.WelcomeScreen
 import com.example.iperf3client.ui.ui.navigator.NavigationItems
+import com.example.iperf3client.utils.DbUtils
 import com.example.iperf3client.viewmodels.TestViewModel
 import kotlinx.coroutines.launch
 import java.security.AccessController.getContext
@@ -74,18 +78,19 @@ enum class IperfScreen(@StringRes val title: Int) {
 @Composable
 fun IperfApp(
     testViewModel: TestViewModel,
-    navController: NavHostController = rememberNavController()
+    context: Context,
+    navController: NavHostController = rememberNavController(),
 
 ) {
-    getContext()
-    NavigationDrawer(navController, testViewModel)
+    NavigationDrawer(navController, testViewModel, context)
 }
 
 @Composable
 fun Navigation(
     navController: NavHostController,
     innerPadding: PaddingValues,
-    testVM: TestViewModel
+    testVM: TestViewModel,
+    context: Context
 ) {
 
     NavHost(
@@ -172,7 +177,14 @@ fun Navigation(
                               },
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(dimensionResource(R.dimen.padding_medium))
+                    .padding(dimensionResource(R.dimen.padding_medium)),
+                onShareClick = {
+                    DbUtils.backupDatabase(
+                        context,
+                        TestDatabase.DATABASE_NAME,
+                        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                        )
+                }
             )
         }
 
@@ -183,7 +195,11 @@ fun Navigation(
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NavigationDrawer(navController: NavHostController, testViewModel: TestViewModel) {
+fun NavigationDrawer(
+    navController: NavHostController,
+    testViewModel: TestViewModel,
+    context: Context
+) {
     val items = listOf(
         NavigationItems(
             title = "Home",
@@ -225,6 +241,7 @@ fun NavigationDrawer(navController: NavHostController, testViewModel: TestViewMo
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
@@ -295,7 +312,7 @@ fun NavigationDrawer(navController: NavHostController, testViewModel: TestViewMo
             }
         ) {
                 innerPadding ->
-            Navigation(navController, innerPadding, testViewModel)
+            Navigation(navController, innerPadding, testViewModel, context)
         }
     }
 }

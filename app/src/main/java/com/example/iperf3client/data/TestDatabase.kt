@@ -5,6 +5,9 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
+import androidx.work.impl.WorkDatabasePathHelper.getDatabasePath
+import java.io.File
+
 
 @Database(entities = [TestUiState::class,ExecutedTestConfig::class,ExecutedTestResults::class], version = 1)
 abstract class TestDatabase : RoomDatabase() {
@@ -15,6 +18,7 @@ abstract class TestDatabase : RoomDatabase() {
 
     companion object {
         private var instance: TestDatabase? = null
+        const val DATABASE_NAME = "iperf3_database"
 
         @Synchronized
         fun exists():Boolean {
@@ -22,16 +26,22 @@ abstract class TestDatabase : RoomDatabase() {
         }
 
         @Synchronized
+        fun getDBPath(ctx: Context):String {
+            return ctx.getDatabasePath(DATABASE_NAME).absolutePath
+        }
+
+        @Synchronized
         fun getInstance(ctx: Context): TestDatabase {
             if(instance == null) {
                 instance = Room.databaseBuilder(
                     ctx.applicationContext, TestDatabase::class.java,
-                    "iperf3_database"
+                    DATABASE_NAME
                 )
                     .fallbackToDestructiveMigration()
                     .addCallback(roomCallback)
                     .build()
             }
+
             return instance!!
         }
 
