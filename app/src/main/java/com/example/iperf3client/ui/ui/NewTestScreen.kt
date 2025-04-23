@@ -121,8 +121,10 @@ fun NewTestScreen(
                 value = port.toString(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 onValueChange = {
-                    if (it.isDigitsOnly() and (it.length <= 4) and (it.isNotEmpty()))
-                        port = it.toInt()
+                    if (it.isDigitsOnly() and (it.length < 6) ) {
+                        if (it=="") port = 0
+                        else port = it.toInt()
+                    }
 
                     isSaved = false
                 },
@@ -203,14 +205,16 @@ fun NewTestScreen(
             Button(
                 enabled = !isSaved,
                 onClick = {
-                    testViewModel.saveUpdateTest(
-                        server,
-                        port,
-                        duration,
-                        interval,
-                        reverse
-                    )
-                    isSaved = true
+                    if (port >= 0) {
+                        testViewModel.saveUpdateTest(
+                            server,
+                            port,
+                            duration,
+                            interval,
+                            reverse
+                        )
+                        isSaved = true
+                    }
                 }) {
                 Text("Save")
             }
