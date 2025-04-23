@@ -42,7 +42,7 @@ class MainActivity : ComponentActivity() {
                 ) {
                     applicationContext
                     checkPermissions(applicationContext)
-                    IperfApp(testViewModel)
+                    IperfApp(testViewModel, applicationContext)
                 }
             }
             addSampleTestsToDB(testViewModel)
