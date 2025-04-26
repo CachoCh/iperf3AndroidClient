@@ -62,7 +62,8 @@ private fun addSampleTestsToDB(testViewModel: TestViewModel) {
             9220,
             100,
             1,
-            true
+            true,
+            false
         )
 
         testViewModel.saveNewTest(
@@ -70,6 +71,7 @@ private fun addSampleTestsToDB(testViewModel: TestViewModel) {
             9221,
             100,
             1,
+            false,
             false
         )
 
@@ -78,7 +80,8 @@ private fun addSampleTestsToDB(testViewModel: TestViewModel) {
             15317,
             100,
             1,
-            true
+            true,
+            false
         )
 
         testViewModel.saveNewTest(
@@ -86,6 +89,7 @@ private fun addSampleTestsToDB(testViewModel: TestViewModel) {
             15318,
             100,
             1,
+            false,
             false
         )
     }

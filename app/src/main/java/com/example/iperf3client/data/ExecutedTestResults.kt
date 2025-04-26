@@ -16,7 +16,8 @@ data class ExecutedTestConfig(
     @ColumnInfo(name = "output") var output: String,
     @ColumnInfo(name = "date") var date: String,
     @ColumnInfo(name = "bandwidth") var bandwidth: String,
-    @ColumnInfo(name = "transfer") var transfer: String
+    @ColumnInfo(name = "transfer") var transfer: String,
+    @ColumnInfo(name = "udp", defaultValue = "false") var upd: Boolean
 )
 
 @Entity(

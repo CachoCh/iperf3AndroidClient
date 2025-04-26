@@ -1,0 +1,228 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "9154be7e38075b4b5191ab670c225cee",
+    "entities": [
+      {
+        "tableName": "TestUiState",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`tid` INTEGER PRIMARY KEY AUTOINCREMENT, `server` TEXT NOT NULL, `port` INTEGER NOT NULL, `duration` INTEGER NOT NULL, `interval` INTEGER NOT NULL, `reverse` INTEGER NOT NULL, `output` TEXT NOT NULL, `favourite` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "tid",
+            "columnName": "tid",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "server",
+            "columnName": "server",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "port",
+            "columnName": "port",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "duration",
+            "columnName": "duration",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "interval",
+            "columnName": "interval",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "reverse",
+            "columnName": "reverse",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "output",
+            "columnName": "output",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "fav",
+            "columnName": "favourite",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "tid"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "ExecutedTestConfig",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`tid` INTEGER PRIMARY KEY AUTOINCREMENT, `server` TEXT NOT NULL, `port` INTEGER NOT NULL, `duration` INTEGER NOT NULL, `interval` INTEGER NOT NULL, `reverse` INTEGER NOT NULL, `output` TEXT NOT NULL, `date` TEXT NOT NULL, `bandwidth` TEXT NOT NULL, `transfer` TEXT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "tid",
+            "columnName": "tid",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "server",
+            "columnName": "server",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "port",
+            "columnName": "port",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "duration",
+            "columnName": "duration",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "interval",
+            "columnName": "interval",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "reverse",
+            "columnName": "reverse",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "output",
+            "columnName": "output",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "date",
+            "columnName": "date",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "bandwidth",
+            "columnName": "bandwidth",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "transfer",
+            "columnName": "transfer",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "tid"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "ExecutedTestResults",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`tid` INTEGER NOT NULL, `measurment` TEXT NOT NULL, `resultID` INTEGER PRIMARY KEY AUTOINCREMENT, `latitude` REAL NOT NULL, `longitude` REAL NOT NULL, `altitude` REAL NOT NULL, `networkType` TEXT NOT NULL, FOREIGN KEY(`tid`) REFERENCES `ExecutedTestConfig`(`tid`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "tid",
+            "columnName": "tid",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "measurment",
+            "columnName": "measurment",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "resultID",
+            "columnName": "resultID",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "latitude",
+            "columnName": "latitude",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "longitude",
+            "columnName": "longitude",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "altitude",
+            "columnName": "altitude",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "networkType",
+            "columnName": "networkType",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "resultID"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_ExecutedTestResults_tid",
+            "unique": false,
+            "columnNames": [
+              "tid"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_ExecutedTestResults_tid` ON `${TABLE_NAME}` (`tid`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "ExecutedTestConfig",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "tid"
+            ],
+            "referencedColumns": [
+              "tid"
+            ]
+          }
+        ]
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '9154be7e38075b4b5191ab670c225cee')"
+    ]
+  }
+}

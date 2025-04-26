@@ -13,6 +13,7 @@ data class TestUiState(
     @ColumnInfo(name = "interval") var interval: Int,
     @ColumnInfo(name = "reverse") var reverse: Boolean,
     @ColumnInfo(name = "output") var output: String,
-    @ColumnInfo(name = "favourite") var fav: Boolean
+    @ColumnInfo(name = "favourite") var fav: Boolean,
+    @ColumnInfo(name = "udp", defaultValue = "false") var udp: Boolean
 ) {
 }
