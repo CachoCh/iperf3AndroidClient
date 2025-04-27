@@ -72,6 +72,7 @@ fun NewTestScreen(
     var duration by rememberSaveable { mutableIntStateOf(testUiState.duration) }
     var interval by rememberSaveable { mutableIntStateOf(testUiState.interval) }
     var reverse by rememberSaveable { mutableStateOf(testUiState.reverse) }
+    var udp by rememberSaveable { mutableStateOf(testUiState.udp) }
     var isSaved by rememberSaveable { mutableStateOf(false) }
 
     Column(
@@ -180,6 +181,15 @@ fun NewTestScreen(
                 }
             )
 
+            Text("UDP")
+            Checkbox(
+                checked = udp,
+                onCheckedChange = {
+                    udp = it
+                    isSaved = false
+                }
+            )
+
         }
 
         Row(
@@ -196,7 +206,8 @@ fun NewTestScreen(
                         port,
                         duration,
                         interval,
-                        reverse
+                        reverse,
+                        udp
                     )
                 }) {
                 Text("Run")
@@ -211,7 +222,8 @@ fun NewTestScreen(
                             port,
                             duration,
                             interval,
-                            reverse
+                            reverse,
+                            udp
                         )
                         isSaved = true
                     }

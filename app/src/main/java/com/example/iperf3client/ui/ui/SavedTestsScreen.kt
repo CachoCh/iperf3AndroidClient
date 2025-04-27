@@ -38,8 +38,9 @@ fun SavedTestsScreen(
         port: Int?,
         duration: Int?,
         interval: Int?,
-        reverse: Boolean?
-    ) -> Unit
+        reverse: Boolean?,
+        udp: Boolean
+        ) -> Unit
 ) {
     BackHandler {
         testViewModel.getTests()
@@ -81,7 +82,8 @@ fun SavedTestsScreen(
                                         item.port,
                                         item.duration,
                                         item.interval,
-                                        item.reverse
+                                        item.reverse,
+                                        item.udp
                                     )
                                 }
                             ) {

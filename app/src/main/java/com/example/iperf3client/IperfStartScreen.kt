@@ -149,14 +149,15 @@ fun Navigation(
                         }
                     navController.navigate(IperfScreen.NewTest.name)
                 },
-                onRunTestClicked ={ server, port, duration, interval, reverse ->
+                onRunTestClicked ={ server, port, duration, interval, reverse, udp ->
                         if (port != null && server != null && duration != null && interval != null && reverse != null) {
                             testVM.runIperfTest(
                                 server,
                                 port,
                                 duration,
                                 interval,
-                                reverse
+                                reverse,
+                                udp
                             )
                         }
                 },

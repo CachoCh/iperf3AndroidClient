@@ -104,6 +104,7 @@ class TestViewModel(applicationContext: Context, testDB : TestDatabase) : ViewMo
         duration: Int,
         interval: Int,
         reverse: Boolean,
+        udp: Boolean
     ) {
         _uiStateFlow.value = TestUiState(
             _uiStateFlow.value.tid,
@@ -113,7 +114,8 @@ class TestViewModel(applicationContext: Context, testDB : TestDatabase) : ViewMo
             interval,
             reverse,
             "",
-            true
+            true,
+            udp
         )
         viewModelScope.launch(Dispatchers.IO) { //this: CoroutineScope
             if (_uiStateFlow.value.tid == null) {
@@ -131,6 +133,7 @@ class TestViewModel(applicationContext: Context, testDB : TestDatabase) : ViewMo
         duration: Int,
         interval: Int,
         reverse: Boolean,
+        udp: Boolean
     ) {
         val test = TestUiState(
             null,
@@ -140,7 +143,8 @@ class TestViewModel(applicationContext: Context, testDB : TestDatabase) : ViewMo
             interval,
             reverse,
             "",
-            true
+            true,
+            udp
         )
         viewModelScope.launch(Dispatchers.IO) { //this: CoroutineScope
                 _uiStateFlow.value = repository.createTest(test)
@@ -180,7 +184,8 @@ class TestViewModel(applicationContext: Context, testDB : TestDatabase) : ViewMo
         port: Int,
         duration: Int,
         interval: Int,
-        reverse: Boolean
+        reverse: Boolean,
+        udp: Boolean
     ) {
         _transferArray.value = listOf<Float>() //clear graph
         _bwArray.value = listOf<Float>() //clear graph
@@ -193,7 +198,8 @@ class TestViewModel(applicationContext: Context, testDB : TestDatabase) : ViewMo
             interval,
             reverse,
             "",
-            _uiStateFlow.value.fav
+            _uiStateFlow.value.fav,
+            udp
         )
         val stream = File(filesDir, "iperf3.XXXXXX")
         var config = IPerfConfig(
@@ -203,7 +209,8 @@ class TestViewModel(applicationContext: Context, testDB : TestDatabase) : ViewMo
             download = _uiStateFlow.value.reverse,
             json = false,
             duration = _uiStateFlow.value.duration,
-            interval = _uiStateFlow.value.interval
+            interval = _uiStateFlow.value.interval,
+            useUDP = udp
         )
 
         _isIPerfTestRunningFlow.update { true }
@@ -218,7 +225,8 @@ class TestViewModel(applicationContext: Context, testDB : TestDatabase) : ViewMo
                 "CHANGE ME",
                 getFormattedTime(),
                 "0",
-                "0"
+                "0",
+                config.useUDP
             )
         )
         iperfJob = viewModelScope.launch {
@@ -326,7 +334,8 @@ class TestViewModel(applicationContext: Context, testDB : TestDatabase) : ViewMo
                     "CHANGE ME",
                     getFormattedTime(),
                     bandwidth,
-                    transfer
+                    transfer,
+                    config.useUDP
                 )
             )
         }
@@ -351,7 +360,7 @@ class TestViewModel(applicationContext: Context, testDB : TestDatabase) : ViewMo
     }
 
     private fun newTestConfig(): TestUiState {
-        return TestUiState(null, "111.111.111.111", 1000, 10, 1, true, "CHANGE ME", false)
+        return TestUiState(null, "111.111.111.111", 1000, 10, 1, true, "CHANGE ME", false, false)
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////
