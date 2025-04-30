@@ -32,23 +32,12 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.core.text.isDigitsOnly
+import com.example.iperf3client.ui.ui.ChartScreen
+import com.example.iperf3client.ui.ui.ResultsListScreen
 import com.example.iperf3client.viewmodels.TestViewModel
-import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
-import com.patrykandpatrick.vico.compose.cartesian.axis.rememberAxisLabelComponent
-import com.patrykandpatrick.vico.compose.cartesian.axis.rememberBottom
-import com.patrykandpatrick.vico.compose.cartesian.axis.rememberStart
-import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLineCartesianLayer
-import com.patrykandpatrick.vico.compose.cartesian.rememberCartesianChart
-import com.patrykandpatrick.vico.compose.cartesian.rememberVicoScrollState
-import com.patrykandpatrick.vico.core.cartesian.AutoScrollCondition
-import com.patrykandpatrick.vico.core.cartesian.Scroll
-import com.patrykandpatrick.vico.core.cartesian.axis.HorizontalAxis
-import com.patrykandpatrick.vico.core.cartesian.axis.VerticalAxis
-import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
 
 @Composable
 fun NewTestScreen(
@@ -59,6 +48,7 @@ fun NewTestScreen(
 
     Log.wtf("CACHO:", "RunningTestScreen START")
 
+    val testResults by testViewModel.testResults.collectAsState()
     val testUiState by testViewModel.uiState.collectAsState()
     val isTestRunningState by testViewModel.isIPerfTestRunning.collectAsState()
     val modelProducer by testViewModel.modelProducer.collectAsState()
@@ -244,7 +234,7 @@ fun NewTestScreen(
 
         Spacer(Modifier.height(10.dp))
 
-        chart(modelProducer)
+        ResultsListScreen(testResults)
 
         Spacer(Modifier.height(10.dp))
 
@@ -261,51 +251,4 @@ fun NewTestScreen(
     }
 }
 
-@Composable
-fun chart(modelProducer: CartesianChartModelProducer) {
 
-    CartesianChartHost(
-        modifier = Modifier,
-        chart =
-            rememberCartesianChart(
-                rememberLineCartesianLayer(),
-                /* listOf(
-                     rememberLineSpec(
-                         DynamicShader.color(Color.Green)
-                     ),
-                     rememberLineSpec(DynamicShader.color(Color.Blue))
-                 )
-             ),*/
-                startAxis = VerticalAxis.rememberStart(label = rememberAxisLabelComponent(color = Color.Green)),
-                //legend = rememberLegend(),
-                /*endAxis = rememberEndAxis(
-                    label = rememberAxisLabelComponent(color = Color.Blue)
-                ),*/
-                bottomAxis = HorizontalAxis.rememberBottom(),
-
-                /*decorations =
-                listOf(
-                    rememberHorizontalLine(
-                        y = { 2f },
-                        line = rememberLineComponent(color = Color.Red, thickness = 2.dp),
-                        labelComponent =
-                        rememberTextComponent(Color.Red, padding = Dimensions.of(horizontal = 8.dp)),
-                    ),
-                    rememberHorizontalLine(
-                        y = { 3f },
-                        line = rememberLineComponent(color = Color.Yellow, thickness = 2.dp),
-                        labelComponent =
-                        rememberTextComponent(Color.Yellow, padding = Dimensions.of(horizontal = 8.dp)),
-                    )
-                ),*/
-            ),
-        modelProducer = modelProducer,
-        scrollState = rememberVicoScrollState(
-            scrollEnabled = true,
-            initialScroll = Scroll.Absolute.End,
-            autoScroll = Scroll.Absolute.End,
-            autoScrollCondition = AutoScrollCondition.OnModelGrowth
-        ),
-        //runInitialAnimation = true
-    )
-}

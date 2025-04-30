@@ -19,7 +19,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.iperf3client.R
-import com.example.iperf3client.ui.chart
 import com.example.iperf3client.viewmodels.TestViewModel
 
 @Composable
@@ -63,9 +62,8 @@ fun WelcomeScreen(
         Text(text = "Last / running test:")
         Text(text = "$direction for $duration s")
         Text(text = "Server: $server:$port")
-        chart(modelProducer)
+        ChartScreen(modelProducer, testResults)
 
-        ResultsList(testResults)
     }
 
 }

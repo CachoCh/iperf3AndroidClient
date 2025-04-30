@@ -128,7 +128,7 @@ fun Navigation(
         startDestination = IperfScreen.Start.name,
         modifier = Modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
+            //.verticalScroll(rememberScrollState())
             .padding(innerPadding)
     ) {
 
