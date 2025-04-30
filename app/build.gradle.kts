@@ -125,4 +125,12 @@ dependencies {
     implementation("com.synaptic-tools:iperf:1.0.0")
     implementation ("androidx.work:work-runtime-ktx:2.10.0")
 
+    //map
+    // origin version of osm android. You may be able to customize the version.
+    implementation ("org.osmdroid:osmdroid-android:6.1.16")
+
+// This library dependencies
+    // https://mvnrepository.com/artifact/tech.utsmankece/osm-android-compose
+    implementation("tech.utsmankece:osm-android-compose:0.0.5")
+
 }

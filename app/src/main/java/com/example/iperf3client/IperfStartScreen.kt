@@ -59,7 +59,6 @@ import com.example.iperf3client.ui.ui.navigator.NavigationItems
 import com.example.iperf3client.utils.DbUtils
 import com.example.iperf3client.viewmodels.TestViewModel
 import kotlinx.coroutines.launch
-import java.security.AccessController.getContext
 
 /**
  * enum values that represent the screens in the app
@@ -98,7 +97,7 @@ fun Navigation(
         startDestination = IperfScreen.Start.name,
         modifier = Modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
+            //.verticalScroll(rememberScrollState())
             .padding(innerPadding)
     ) {
 

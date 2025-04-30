@@ -52,7 +52,7 @@ fun SavedTestsScreen(
     ) {
 
         LazyColumn(
-            modifier = Modifier.height(500.dp)
+            modifier = Modifier.fillMaxWidth()
         ) {
             items(testListState) { item ->
                 Card(
