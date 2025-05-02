@@ -15,12 +15,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.DateRange
 import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.PlayArrow
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.DrawerValue
@@ -53,6 +55,7 @@ import com.example.iperf3client.data.TestDatabase
 import com.example.iperf3client.ui.MeasurementsScreen
 import com.example.iperf3client.ui.NewTestScreen
 import com.example.iperf3client.ui.SavedTestsScreen
+import com.example.iperf3client.ui.ui.AboutScreen
 import com.example.iperf3client.ui.ui.RunningTestScreen
 import com.example.iperf3client.ui.ui.WelcomeScreen
 import com.example.iperf3client.ui.ui.navigator.NavigationItems
@@ -68,7 +71,8 @@ enum class IperfScreen(@StringRes val title: Int) {
     NewTest(title = R.string.new_test),
     RunningTest(title = R.string.running_test),
     SavedTests(title = R.string.saved_tests),
-    Measurements(title = R.string.measurements)
+    Measurements(title = R.string.measurements),
+    About(title = R.string.measurements)
 
 }
 
@@ -187,7 +191,9 @@ fun Navigation(
                 }
             )
         }
-
+        composable(route = IperfScreen.About.name) {
+            AboutScreen(context)
+        }
     }
 }
 
@@ -231,6 +237,12 @@ fun NavigationDrawer(
             selectedIcon = Icons.Filled.DateRange,
             unselectedIcon = Icons.Outlined.DateRange,
             screen = IperfScreen.Measurements
+        ),
+        NavigationItems(
+            title = "About",
+            selectedIcon = Icons.Filled.Info,
+            unselectedIcon = Icons.Outlined.Info,
+            screen = IperfScreen.About
         )
     )
 

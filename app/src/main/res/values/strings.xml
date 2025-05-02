@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">iPerf3Client</string>
     <string name="measurements">Measurements</string>
+    <string name="about">About</string>
     <string name="new_test">New Test</string>
     <string name="saved_tests">Saved Tests</string>
     <string name="running_test">Running Tests</string>
@@ -8,4 +9,8 @@
     <string name="MbitsPsec">Mbits/sec</string>
     <string name="download">Download</string>
     <string name="upload">Upload</string>
+    <string name="website">Website</string>
+    <string name="license">License</string>
+    <string name="license_v">Apache Software License, Version 1.1</string>
+    <string name="acknowledgments">Acknowledgments</string>
 </resources>
