@@ -2,6 +2,7 @@ package com.example.iperf3client.viewmodels
 
 
 import android.content.Context
+import android.location.Location
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -56,6 +57,7 @@ class TestViewModel(applicationContext: Context, testDB : TestDatabase) : ViewMo
     private val _senderBandwidth = MutableStateFlow("")
     private val _receiverTransfer = MutableStateFlow("")
     private val _receiverBandwidth = MutableStateFlow("")
+    private var _resultsLocation = MutableStateFlow(listOf<Location>())
 
 
     private val _executedTestsList = MutableStateFlow(listOf<ExecutedTestConfig>())
@@ -66,11 +68,11 @@ class TestViewModel(applicationContext: Context, testDB : TestDatabase) : ViewMo
     var testList: StateFlow<List<TestUiState>> = _testListFlow.asStateFlow()
     var testCount: StateFlow<Int> =_testCountFlow.asStateFlow()
     var testResults: StateFlow<List<String>> = _testResults.asStateFlow()
-    private val locationFlow = locationRepository.locationFlow
+    val locationFlow = locationRepository.locationFlow
     val transferArray: StateFlow<List<Float>> = _transferArray.asStateFlow()
     val bwArray: StateFlow<List<Float>> = _bwArray.asStateFlow()
     var modelProducer = _modelProducer.asStateFlow()
-
+    var resultsLocation: StateFlow<List<Location>> = _resultsLocation.asStateFlow()
     var executedTestsList: StateFlow<List<ExecutedTestConfig>> = _executedTestsList.asStateFlow()
 
     var enderTransfer = _senderTransfer.asStateFlow()
@@ -390,6 +392,9 @@ class TestViewModel(applicationContext: Context, testDB : TestDatabase) : ViewMo
                 locationFlow.value.altitude,
                 networkInfoRepository.getNetworkType()
             )
+            _resultsLocation.value = _resultsLocation.value + locationFlow.value
+            Log.wtf("CACHO", "TestViewModel:_resultsLocation ${_resultsLocation.value.size}")
+
         }
     }
 
@@ -413,7 +418,7 @@ class TestViewModel(applicationContext: Context, testDB : TestDatabase) : ViewMo
         }
     }
 
-    ////////////////////////////////////////////////////////////////////////
+
     private fun getCurrentLocation() {
         viewModelScope.launch(ioDispatcher) {
             locationRepository.getCurrentLocation()

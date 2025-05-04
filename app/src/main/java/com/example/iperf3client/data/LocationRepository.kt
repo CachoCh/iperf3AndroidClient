@@ -34,22 +34,6 @@ class LocationRepository (context : Context) {
             _locationFlow.value = location
         }
     }
-/*
-    @SuppressLint("MissingPermission")
-    fun startLocationUpdates() {
-        val listener = object : LocationListener {
-            override fun onLocationChanged(location: Location) {
-                //Log.d("Location", "Updated Lat: ${location.latitude}, Lon: ${location.longitude}")
-            }
-        }
-
-        locationManager.requestLocationUpdates(
-            LocationManager.GPS_PROVIDER,
-            2000L, // minimum time interval (ms)
-            5f,    // minimum distance (meters)
-            listener
-        )
-    }*/
 
     companion object {
         @Volatile private var instance: LocationRepository? = null
