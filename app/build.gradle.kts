@@ -129,8 +129,7 @@ dependencies {
     // origin version of osm android. You may be able to customize the version.
     implementation ("org.osmdroid:osmdroid-android:6.1.16")
 
-// This library dependencies
-    // https://mvnrepository.com/artifact/tech.utsmankece/osm-android-compose
-    implementation("tech.utsmankece:osm-android-compose:0.0.5")
+    implementation ("ovh.plrapps:mapcompose:2.16.2")
+
 
 }

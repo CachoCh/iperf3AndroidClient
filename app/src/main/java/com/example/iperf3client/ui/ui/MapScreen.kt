@@ -1,81 +1,99 @@
 package com.example.iperf3client.ui.ui
 
+import android.location.Location
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import com.utsman.osmandcompose.DefaultMapProperties
-import com.utsman.osmandcompose.OpenStreetMap
-import com.utsman.osmandcompose.ZoomButtonVisibility
-import com.utsman.osmandcompose.rememberCameraState
-import com.utsman.osmandcompose.rememberMapViewWithLifecycle
-import com.utsman.osmandcompose.rememberOverlayManagerState
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.viewinterop.AndroidView
+import com.example.iperf3client.viewmodels.TestViewModel
+import org.osmdroid.config.Configuration
+import org.osmdroid.library.BuildConfig
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
+import org.osmdroid.views.MapView
+import org.osmdroid.views.overlay.Marker
+
 
 @Composable
 fun MapScreen(
-    testResults: List<String>
+    testViewModel: TestViewModel
 ) {
+    val resultsLocation by testViewModel.resultsLocation.collectAsState()
     Column(modifier = Modifier.fillMaxWidth()) {
-
-            OsmdroidMapView(Modifier.weight(10f))
-
+            OsmdroidMapView(resultsLocation)
     }
 }
 
 
 //https://stackoverflow.com/questions/76161027/android-jetpack-compose-open-street-map-conflict-with-tabrow
 @Composable
-fun OsmdroidMapView(weight: Modifier) {
-    var mapView = rememberMapViewWithLifecycle()
-    mapView.clipToOutline = true
+fun OsmdroidMapView(resultsLocation: List<Location>) {
+
+    val context = LocalContext.current
 
 
-    // define camera state
-    val cameraState = rememberCameraState {
-        geoPoint = GeoPoint(-6.3970066, 106.8224316)
-        zoom = 12.0 // optional, default is 5.0
+    AndroidView(
+        modifier = Modifier.fillMaxSize(),
+        factory = { context ->
+
+            var mapView = MapView(context).apply{
+                setTileSource(TileSourceFactory.DEFAULT_TILE_SOURCE)
+                setBuiltInZoomControls(true)
+                setMultiTouchControls(true)
+                clipToOutline = true
+                controller.setZoom(15.0)
+                Configuration.getInstance().userAgentValue = "CACHO"
+            }
+            addExistingMarkers(mapView, resultsLocation)
+            mapView
+        },
+        update = { view ->
+            // Code to update or recompose the view goes here
+            // Since geoPoint is read here, the view will recompose whenever it is updated
+            var startPoint = GeoPoint(47.278493, 8.582961)
+            addMarker(view, startPoint)
+            if(resultsLocation.isNotEmpty()) {
+                addMarker(view, resultsLocation.get(resultsLocation.size - 1))
+                startPoint = GeoPoint(resultsLocation.get(resultsLocation.size - 1))
+                view.controller.setCenter((startPoint)) //TODO replace with last result geopoint
+            }
+            view.controller.animateTo(startPoint)
+            //var mMyLocationOverlay = MyLocationNewOverlay(GpsMyLocationProvider(context), mapView)
+            //view.controller.animateTo(mMyLocationOverlay.myLocation)
+            //view.controller.setZoom(6.0)
+        }
+    )
+
+
+}
+
+private fun addExistingMarkers(mapView: MapView, resultsLocation: List<Location>) {
+    for(location in resultsLocation){
+        addMarker(mapView, location)
     }
+}
 
-    var mapProperties by remember {
-        mutableStateOf(DefaultMapProperties)
-    }
+private fun addMarker(mapView: MapView, location:Location) {
+    val startMarker = Marker(mapView)
+    startMarker.setPosition(GeoPoint(location))
+    startMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
 
-    val overlayManagerState = rememberOverlayManagerState()
+    mapView.overlays.add(startMarker)
+}
 
-    SideEffect {
-        mapProperties = mapProperties
-            .copy(isTilesScaledToDpi = true)
-            .copy(tileSources = TileSourceFactory.MAPNIK)
-            .copy(isEnableRotationGesture = true)
-            .copy(zoomButtonVisibility = ZoomButtonVisibility.NEVER)
-    }
+private fun addMarker(mapView: MapView, location: GeoPoint) {
+    val startMarker = Marker(mapView)
+    startMarker.setPosition(GeoPoint(location))
+    startMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+    startMarker.setTextIcon("HELLO")
 
-
-    OpenStreetMap(
-        modifier = Modifier.height(200.dp),
-        cameraState = cameraState,
-        properties = mapProperties,
-        overlayManagerState = overlayManagerState,
-        /*onFirstLoadListener = {
-            val copyright = CopyrightOverlay(context)
-            overlayManagerState.overlayManager.add(copyright)
-        }*/
-    ) {
-
-    }
+    //startMarker.setInfoWindow()
+    mapView.overlays.add(startMarker)
 }
 
 

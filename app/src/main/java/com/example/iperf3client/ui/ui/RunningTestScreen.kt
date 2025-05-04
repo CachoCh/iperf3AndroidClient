@@ -26,13 +26,13 @@ fun RunningTestScreen(
     val modelProducer by testViewModel.modelProducer.collectAsState()
 
 
-    TabScreen(testResults, modelProducer)
+    TabScreen(testViewModel, testResults, modelProducer)
     //ResultsList(testResults)
 
 }
 
 @Composable
-fun TabScreen(testResults: List<String>, modelProducer: CartesianChartModelProducer) {
+fun TabScreen(testViewModel: TestViewModel, testResults: List<String>, modelProducer: CartesianChartModelProducer) {
     var tabIndex by remember { mutableStateOf(0) }
 
     val tabs = listOf("Chart", "Map")
@@ -53,7 +53,7 @@ fun TabScreen(testResults: List<String>, modelProducer: CartesianChartModelProdu
         }
         when (tabIndex) {
             0 -> ChartScreen(modelProducer, testResults)
-            1 -> MapScreen(testResults)
+            1 -> MapScreen(testViewModel)
         }
     }
 }
