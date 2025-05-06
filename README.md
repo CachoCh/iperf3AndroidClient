@@ -15,11 +15,13 @@ In general, the app is capable of:
 
 - Save preconfigured;
 
-- Save test results;
+- Save test results and export them to the device;
 
 - Graph transfer and bitrate;
 
 This application does not share your personal data or geolocation, all work is offline.
+The coarse and fine location permissions are used to give context to the measurments, data can be exported from the app for further analysis.
+Location permissions are optional, iperf will still measure without them.
 
 <img src='/fastlane/metadata/android/en-US/images/running.png' width='200'/> <img src='/fastlane/metadata/android/en-US/images/new_test.png' width='200'/> <img src='/fastlane/metadata/android/en-US/images/fav.png' width='200'/>
  
