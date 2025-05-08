@@ -1,9 +1,17 @@
 package com.example.iperf3client
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
+import android.content.ContextWrapper
+import android.content.Intent
+import android.net.Uri
 import android.os.Environment
+import androidx.activity.compose.LocalActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,6 +25,7 @@ import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Add
@@ -26,6 +35,8 @@ import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.PlayArrow
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -38,14 +49,19 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.unit.dp
+import androidx.core.app.ActivityCompat.startActivityForResult
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -62,6 +78,10 @@ import com.example.iperf3client.ui.ui.navigator.NavigationItems
 import com.example.iperf3client.utils.DbUtils
 import com.example.iperf3client.viewmodels.TestViewModel
 import kotlinx.coroutines.launch
+import java.io.FileInputStream
+import java.io.OutputStream
+
+val EXPORT_DATA_REQUEST = 101
 
 /**
  * enum values that represent the screens in the app
@@ -84,7 +104,7 @@ fun IperfApp(
     context: Context,
     navController: NavHostController = rememberNavController(),
 
-) {
+    ) {
     NavigationDrawer(navController, testViewModel, context)
 }
 
@@ -146,23 +166,23 @@ fun Navigation(
                     cancelOrderAndNavigateToStart(navController)
                 },
                 onItemClick = {
-                        if (it != null) {
-                            testVM.getTest(it)
-                            testVM.clearTestScreen()
-                        }
+                    if (it != null) {
+                        testVM.getTest(it)
+                        testVM.clearTestScreen()
+                    }
                     navController.navigate(IperfScreen.NewTest.name)
                 },
-                onRunTestClicked ={ server, port, duration, interval, reverse, udp ->
-                        if (port != null && server != null && duration != null && interval != null && reverse != null) {
-                            testVM.runIperfTest(
-                                server,
-                                port,
-                                duration,
-                                interval,
-                                reverse,
-                                udp
-                            )
-                        }
+                onRunTestClicked = { server, port, duration, interval, reverse, udp ->
+                    if (port != null && server != null && duration != null && interval != null && reverse != null) {
+                        testVM.runIperfTest(
+                            server,
+                            port,
+                            duration,
+                            interval,
+                            reverse,
+                            udp
+                        )
+                    }
                 },
                 modifier = Modifier
                     .fillMaxSize()
@@ -175,10 +195,10 @@ fun Navigation(
                 onCancelButtonClicked = {
                     cancelOrderAndNavigateToStart(navController)
                 },
-                onItemClick = {tid ->
+                onItemClick = { tid ->
                     testVM.getExecutedTestResults(tid)
                     navController.navigate(IperfScreen.RunningTest.name)
-                              },
+                },
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(dimensionResource(R.dimen.padding_medium)),
@@ -187,7 +207,7 @@ fun Navigation(
                         context,
                         TestDatabase.DATABASE_NAME,
                         Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-                        )
+                    )
                 }
             )
         }
@@ -319,12 +339,75 @@ fun NavigationDrawer(
                                 contentDescription = "Menu"
                             )
                         }
+                    },
+                    actions = {
+                        DropdownMenu()
                     }
+
                 )
             }
-        ) {
-                innerPadding ->
+        ) { innerPadding ->
             Navigation(navController, innerPadding, testViewModel, context)
+        }
+    }
+}
+
+@Composable
+fun DropdownMenu() {
+    val context = LocalContext.current
+    var expanded by remember { mutableStateOf(false) }
+    var exportUri by remember { mutableStateOf<Uri?>(null) }
+
+    val exportLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.CreateDocument("application/octet-stream")
+    ) { uri: Uri? ->
+        if (uri != null) {
+            exportUri = uri
+        }
+    }
+
+    LaunchedEffect(exportUri) {
+        exportUri?.let { uri ->
+            val dbFile = context.getDatabasePath(TestDatabase.DATABASE_NAME)
+            if (dbFile.exists()) {
+                try {
+                    FileInputStream(dbFile).use { input ->
+                        context.contentResolver.openOutputStream(uri)?.use { output ->
+                            input.copyTo(output)
+                        }
+                    }
+                    // Success message if needed
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    // Error message if needed
+                }
+            }
+            exportUri = null
+        }
+    }
+
+    Box(
+        modifier = Modifier
+            .padding(16.dp)
+    ) {
+        IconButton(onClick = { expanded = !expanded }) {
+            Icon(Icons.Default.MoreVert, contentDescription = "More options")
+        }
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            DropdownMenuItem(
+                text = { Text("Share") },
+                onClick = { /* Do something... */ }
+            )
+            DropdownMenuItem(
+                text = { Text("Export DB") },
+                onClick = {
+                    expanded = false
+                    exportLauncher.launch(TestDatabase.DATABASE_NAME)
+                }
+            )
         }
     }
 }
@@ -339,11 +422,37 @@ private fun cancelOrderAndNavigateToStart(
 }
 
 @Composable
-private fun getCurrentScreen(navController : NavHostController): IperfScreen {
+private fun getCurrentScreen(navController: NavHostController): IperfScreen {
     // Get current back stack entry
     val backStackEntry by navController.currentBackStackEntryAsState()
     // Get the name of the current screen
     return IperfScreen.valueOf(
         backStackEntry?.destination?.route ?: IperfScreen.Start.name
     )
+}
+
+@Composable
+fun ExportDbDropdownMenuItem(dbFileName: String = "yourdatabase.db") {
+
+
+
+}
+
+private fun startActionCreateDocumentForExportIntent(activity: Activity) {
+
+    val intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
+    intent.addCategory(Intent.CATEGORY_OPENABLE)
+    intent.setType("text/csv")
+    intent.putExtra(Intent.EXTRA_TITLE, "export.csv")
+
+    startActivityForResult(activity, intent, EXPORT_DATA_REQUEST, null)
+}
+
+private fun Context.getActivity(): Activity {
+    var context = this
+    while (context is ContextWrapper) {
+        if (context is Activity) return context
+        context = context.baseContext
+    }
+    error("Activity not found")
 }
