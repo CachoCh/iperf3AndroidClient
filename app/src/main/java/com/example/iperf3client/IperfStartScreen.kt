@@ -53,6 +53,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -120,6 +121,7 @@ fun Navigation(
     testVM: TestViewModel,
     context: Context
 ) {
+    val testUiState by testVM.uiState.collectAsState()
 
     NavHost(
         navController = navController,
@@ -134,6 +136,7 @@ fun Navigation(
         composable(route = IperfScreen.Start.name) {
             WelcomeScreen(
                 onNewTestButtonClicked = {
+                    testUiState.tid=null
                     navController.navigate(IperfScreen.NewTest.name)
                 },
                 modifier = Modifier

@@ -3,7 +3,9 @@ package com.example.iperf3client.ui.ui
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -40,7 +42,9 @@ fun VerticalScrollingText(testResults: List<String>) {
 @Composable
 fun ResultsList(testResults: List<String>) {
     LazyColumn(
-        modifier = Modifier.height(500.dp)
+        modifier = Modifier
+            .wrapContentHeight()
+            .heightIn(max = 1000.dp)
     ) {
         items(testResults) { item ->
             Card(
