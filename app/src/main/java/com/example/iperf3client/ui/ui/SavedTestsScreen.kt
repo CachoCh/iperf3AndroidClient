@@ -72,7 +72,10 @@ fun SavedTestsScreen(
                         Column(modifier = Modifier.weight(4f)) {
                             Text(text = "Test: ${item.tid.toString() ?: "New"}")
                             Text(text = "${item.server}: ${item.port}")
-                            Text(text = if (item.reverse) "Download" else "Upload")
+                            Row() {
+                                Text(text = if (item.reverse) "Download" else "Upload", Modifier.weight(1f))
+                                Text(text = if (item.udp) "UDP" else "TCP", Modifier.weight(1f))
+                            }
                         }
                         Column(
                             modifier = Modifier.weight(1f),

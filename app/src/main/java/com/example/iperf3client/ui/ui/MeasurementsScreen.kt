@@ -139,10 +139,8 @@ fun executedTestsList(
                 Row {
                     Text(text = "Server: ${item.server}", Modifier.weight(1f), color = Color.Yellow)
                     Text(text = "Port: ${item.port}", Modifier.weight(1f))
-                    var udp = ""
-                    udp = if (item.upd) "UDP"
-                    else "TCP"
-                    Text(text = udp, Modifier.weight(1f))
+                    Text(text = if (item.upd) "UDP" else "TCP", Modifier.weight(1f))
+
 
                 }
 
