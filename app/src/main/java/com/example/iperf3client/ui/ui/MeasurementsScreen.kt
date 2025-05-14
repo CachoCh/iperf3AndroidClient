@@ -51,17 +51,6 @@ fun MeasurementsScreen(
                 text = "Tests Results: ",
                 modifier = Modifier.weight(7f)
             )
-            IconButton(
-                modifier = Modifier.weight(1f),
-                onClick = {
-                    onShareClick()
-                }
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Share,
-                    contentDescription = null
-                )
-            }
         }
         executedTestsList(
             testResults,

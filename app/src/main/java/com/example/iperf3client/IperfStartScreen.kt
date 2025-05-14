@@ -7,8 +7,11 @@ import android.content.ContextWrapper
 import android.content.Intent
 import android.net.Uri
 import android.os.Environment
-import androidx.activity.compose.LocalActivity
+import android.util.Log
+import android.widget.Toast
+import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Box
@@ -62,6 +65,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat.startActivityForResult
+import androidx.core.content.FileProvider
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -76,10 +80,11 @@ import com.example.iperf3client.ui.ui.RunningTestScreen
 import com.example.iperf3client.ui.ui.WelcomeScreen
 import com.example.iperf3client.ui.ui.navigator.NavigationItems
 import com.example.iperf3client.utils.DbUtils
+import com.example.iperf3client.utils.DbUtils.Companion.shareRoomDatabase
 import com.example.iperf3client.viewmodels.TestViewModel
 import kotlinx.coroutines.launch
+import java.io.File
 import java.io.FileInputStream
-import java.io.OutputStream
 
 val EXPORT_DATA_REQUEST = 101
 
@@ -397,9 +402,15 @@ fun DropdownMenu() {
             expanded = expanded,
             onDismissRequest = { expanded = false }
         ) {
+            val launcher =
+                rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {}
             DropdownMenuItem(
                 text = { Text("Share") },
-                onClick = { /* Do something... */ }
+                onClick = {
+                    shareRoomDatabase(context,
+                        TestDatabase.DATABASE_NAME,
+                        launcher)
+                }
             )
             DropdownMenuItem(
                 text = { Text("Export DB") },
@@ -429,30 +440,4 @@ private fun getCurrentScreen(navController: NavHostController): IperfScreen {
     return IperfScreen.valueOf(
         backStackEntry?.destination?.route ?: IperfScreen.Start.name
     )
-}
-
-@Composable
-fun ExportDbDropdownMenuItem(dbFileName: String = "yourdatabase.db") {
-
-
-
-}
-
-private fun startActionCreateDocumentForExportIntent(activity: Activity) {
-
-    val intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
-    intent.addCategory(Intent.CATEGORY_OPENABLE)
-    intent.setType("text/csv")
-    intent.putExtra(Intent.EXTRA_TITLE, "export.csv")
-
-    startActivityForResult(activity, intent, EXPORT_DATA_REQUEST, null)
-}
-
-private fun Context.getActivity(): Activity {
-    var context = this
-    while (context is ContextWrapper) {
-        if (context is Activity) return context
-        context = context.baseContext
-    }
-    error("Activity not found")
 }
