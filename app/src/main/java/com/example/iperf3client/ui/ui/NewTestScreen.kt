@@ -32,6 +32,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.core.text.isDigitsOnly
@@ -64,6 +65,8 @@ fun NewTestScreen(
     var reverse by rememberSaveable { mutableStateOf(testUiState.reverse) }
     var udp by rememberSaveable { mutableStateOf(testUiState.udp) }
     var isSaved by rememberSaveable { mutableStateOf(false) }
+
+    var context = LocalContext.current
 
     Column(
         modifier = modifier.padding(horizontal = 5.dp, vertical = 10.dp)
@@ -197,7 +200,8 @@ fun NewTestScreen(
                         duration,
                         interval,
                         reverse,
-                        udp
+                        udp,
+                        context
                     )
                 }) {
                 Text("Run")

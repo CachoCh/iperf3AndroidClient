@@ -127,7 +127,7 @@ dependencies {
 
     //map
     // origin version of osm android. You may be able to customize the version.
-    implementation ("org.osmdroid:osmdroid-android:6.1.16")
+    implementation ("org.osmdroid:osmdroid-android:6.1.20")
 
     implementation ("ovh.plrapps:mapcompose:2.16.2")
 

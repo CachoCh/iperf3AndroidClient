@@ -3,7 +3,9 @@ package com.example.iperf3client.viewmodels
 
 import android.content.Context
 import android.location.Location
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.iperf3client.data.ExecutedTestConfig
@@ -28,6 +30,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.descriptors.PrimitiveKind
+import org.osmdroid.util.GeoPoint
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -44,6 +47,7 @@ class TestViewModel(applicationContext: Context, testDB : TestDatabase) : ViewMo
     private val networkInfoRepository = NetworkInfoRepository.getInstance(applicationContext)
     private val modelProd: CartesianChartModelProducer = CartesianChartModelProducer()
 
+    private var _mapMarkers = MutableStateFlow(listOf(SpeedMapMarker(GeoPoint(0.0,0.0),0F)))
     private var _transferArray = MutableStateFlow(listOf(0F))
     private var _bwArray = MutableStateFlow(listOf(0F))
     private val _uiStateFlow = MutableStateFlow(newTestConfig())
@@ -57,7 +61,6 @@ class TestViewModel(applicationContext: Context, testDB : TestDatabase) : ViewMo
     private val _senderBandwidth = MutableStateFlow("")
     private val _receiverTransfer = MutableStateFlow("")
     private val _receiverBandwidth = MutableStateFlow("")
-    private var _resultsLocation = MutableStateFlow(listOf<Location>())
 
 
     private val _executedTestsList = MutableStateFlow(listOf<ExecutedTestConfig>())
@@ -72,13 +75,13 @@ class TestViewModel(applicationContext: Context, testDB : TestDatabase) : ViewMo
     val transferArray: StateFlow<List<Float>> = _transferArray.asStateFlow()
     val bwArray: StateFlow<List<Float>> = _bwArray.asStateFlow()
     var modelProducer = _modelProducer.asStateFlow()
-    var resultsLocation: StateFlow<List<Location>> = _resultsLocation.asStateFlow()
     var executedTestsList: StateFlow<List<ExecutedTestConfig>> = _executedTestsList.asStateFlow()
 
     var enderTransfer = _senderTransfer.asStateFlow()
     var senderBandwidth = _senderBandwidth.asStateFlow()
     var receiverTransfer = _receiverTransfer.asStateFlow()
     var receiverBandwidth = _receiverBandwidth.asStateFlow()
+    var mapMarker = _mapMarkers.asStateFlow()
 
     private var filesDir: File = applicationContext.applicationContext.filesDir
     private lateinit var iperfJob: Job
@@ -94,6 +97,7 @@ class TestViewModel(applicationContext: Context, testDB : TestDatabase) : ViewMo
             _transferArray.value = listOf(0F)
             _bwArray.value = listOf(0F)
             modelProducer(_bwArray.value, _transferArray.value)
+            locationRepository.tracker.stopLocationUpdates()
         }
     }
 
@@ -187,8 +191,11 @@ class TestViewModel(applicationContext: Context, testDB : TestDatabase) : ViewMo
         duration: Int,
         interval: Int,
         reverse: Boolean,
-        udp: Boolean
+        udp: Boolean,
+        context: Context
     ) {
+
+        _mapMarkers.value = listOf(SpeedMapMarker(GeoPoint(0.0,0.0),0F))
         _transferArray.value = listOf<Float>() //clear graph
         _bwArray.value = listOf<Float>() //clear graph
         _testResults.value = listOf<String>() // clear lazylist from previous results
@@ -216,6 +223,7 @@ class TestViewModel(applicationContext: Context, testDB : TestDatabase) : ViewMo
         )
 
         _isIPerfTestRunningFlow.update { true }
+        locationRepository.tracker.startLocationUpdates()
         saveResultsTestConfig(
             ExecutedTestConfig(
                 null,
@@ -232,7 +240,7 @@ class TestViewModel(applicationContext: Context, testDB : TestDatabase) : ViewMo
             )
         )
         iperfJob = viewModelScope.launch {
-            doStartRequest(config)
+            doStartRequest(config, context)
         }
     }
 
@@ -246,14 +254,16 @@ class TestViewModel(applicationContext: Context, testDB : TestDatabase) : ViewMo
     fun cancelIperfJob() {
         IPerf.deInit()
         _isIPerfTestRunningFlow.update { false }
+        locationRepository.tracker.stopLocationUpdates()
     }
 
-    private suspend fun doStartRequest(config: IPerfConfig) {
+    private suspend fun doStartRequest(config: IPerfConfig, context: Context) {
         withContext(Dispatchers.IO) {
             try {
                 IPerf.seCallBack {
                     success {
                         _isIPerfTestRunningFlow.update { false }
+                        locationRepository.tracker.stopLocationUpdates()
                         saveMeasurement(
                             resultID,
                             "iPerf request done, running = ${_isIPerfTestRunningFlow.value}"
@@ -262,8 +272,8 @@ class TestViewModel(applicationContext: Context, testDB : TestDatabase) : ViewMo
                     }
                     update { text ->
                         resultBuilder?.append(text)
-                        getCurrentLocation()
                         _isIPerfTestRunningFlow.update { true }
+                        locationRepository.tracker.startLocationUpdates()
                         _iPerfRequestResultFlow.value = (resultBuilder.toString())
                         _testResults.value = listOf(text ?: "") + _testResults.value
 
@@ -287,6 +297,7 @@ class TestViewModel(applicationContext: Context, testDB : TestDatabase) : ViewMo
                         saveMeasurement(resultID, "iPerf request failed:\n error: $e")
                         //_testResults.value = _testResults.value.toMutableList().plus("iPerf request failed:\n error: $e")
                         _isIPerfTestRunningFlow.update { false }
+                        locationRepository.tracker.stopLocationUpdates()
                         println("CACHO:  error $resultBuilder, running = ${_isIPerfTestRunningFlow.value}")
                     }
                 }
@@ -354,6 +365,7 @@ class TestViewModel(applicationContext: Context, testDB : TestDatabase) : ViewMo
             _transferArray.value = _transferArray.value + tr
             _bwArray.value = _bwArray.value + bw
             modelProducer(_bwArray.value, _transferArray.value)
+            _mapMarkers.value = _mapMarkers.value + listOf(SpeedMapMarker(GeoPoint(locationFlow.value),bw.last()))
         }
     }
 
@@ -392,9 +404,6 @@ class TestViewModel(applicationContext: Context, testDB : TestDatabase) : ViewMo
                 locationFlow.value.altitude,
                 networkInfoRepository.getNetworkType()
             )
-            _resultsLocation.value = _resultsLocation.value + locationFlow.value
-            Log.wtf("CACHO", "TestViewModel:_resultsLocation ${_resultsLocation.value.size}")
-
         }
     }
 
@@ -418,14 +427,6 @@ class TestViewModel(applicationContext: Context, testDB : TestDatabase) : ViewMo
         }
     }
 
-
-    private fun getCurrentLocation() {
-        viewModelScope.launch(ioDispatcher) {
-            locationRepository.getCurrentLocation()
-        }
-    }
-
-
     private fun modelProducer(value: List<Float>, value1: List<Float>) {
         viewModelScope.launch(defaultDispatcher) {
             _modelProducer.value.runTransaction {
@@ -436,6 +437,10 @@ class TestViewModel(applicationContext: Context, testDB : TestDatabase) : ViewMo
             }
         }
     }
+
+}
+
+class SpeedMapMarker(val location: GeoPoint, val throughput: Float){
 
 }
 
