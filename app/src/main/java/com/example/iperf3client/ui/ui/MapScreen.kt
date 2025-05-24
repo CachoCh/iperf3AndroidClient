@@ -40,7 +40,7 @@ fun OsmdroidMapView(testViewModel: TestViewModel) {
     val mapMarker by testViewModel.mapMarker.collectAsState()
     // Save center location and zoom level
     var mapCenter by rememberSaveable {mutableStateOf(mapMarker.last().location)}
-    var zoomLevel by rememberSaveable {mutableStateOf(15.0)}
+    var zoomLevel by rememberSaveable {mutableStateOf(20.0)}
 
     AndroidView(
         modifier = Modifier.fillMaxSize(),
