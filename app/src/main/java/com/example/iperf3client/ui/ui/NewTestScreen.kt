@@ -37,7 +37,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.core.text.isDigitsOnly
 import com.example.iperf3client.ui.ui.ChartScreen
+import com.example.iperf3client.ui.ui.IperfRawOutputScreen
 import com.example.iperf3client.ui.ui.ResultsListScreen
+import com.example.iperf3client.ui.ui.ResultsTableScreen
 import com.example.iperf3client.viewmodels.TestViewModel
 
 @Composable
@@ -69,7 +71,7 @@ fun NewTestScreen(
     var context = LocalContext.current
 
     Column(
-        modifier = modifier.padding(horizontal = 5.dp, vertical = 10.dp)
+        modifier = modifier.padding(horizontal = 2.dp, vertical = 10.dp)
     ) {
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -236,9 +238,7 @@ fun NewTestScreen(
             }
         }
 
-        Spacer(Modifier.height(10.dp))
 
-        ResultsListScreen(testResults)
 
         Spacer(Modifier.height(10.dp))
 
@@ -252,6 +252,10 @@ fun NewTestScreen(
             Text("Transfer \n$receiverTransfer", modifier = Modifier.weight(2f))
             Text("Bandwidth \n$receiverBandwidth", modifier = Modifier.weight(2f))
         }
+
+        Spacer(Modifier.height(10.dp))
+
+        ResultsTableScreen(testResults)
     }
 }
 
