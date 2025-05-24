@@ -35,7 +35,7 @@ fun RunningTestScreen(
 fun TabScreen(testViewModel: TestViewModel, testResults: List<String>, modelProducer: CartesianChartModelProducer) {
     var tabIndex by remember { mutableStateOf(0) }
 
-    val tabs = listOf("Chart", "Map")
+    val tabs = listOf("Chart", "Map", "Iperf3 Output")
 
     Column(
         modifier = Modifier
@@ -54,6 +54,7 @@ fun TabScreen(testViewModel: TestViewModel, testResults: List<String>, modelProd
         when (tabIndex) {
             0 -> ChartScreen(modelProducer, testResults)
             1 -> MapScreen(testViewModel)
+            2 -> IperfRawOutputScreen(testViewModel)
         }
     }
 }

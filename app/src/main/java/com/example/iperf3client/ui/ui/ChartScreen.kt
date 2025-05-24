@@ -66,5 +66,5 @@ fun ChartScreen(modelProducer: CartesianChartModelProducer, testResults: List<St
             //runInitialAnimation = true
         )
     }
-    if(testResults.isNotEmpty())  ResultsListScreen(testResults)
+    if(testResults.isNotEmpty())  ResultsTableScreen(testResults)
 }

@@ -277,6 +277,7 @@ class TestViewModel(applicationContext: Context, testDB : TestDatabase) : ViewMo
                         _iPerfRequestResultFlow.value = (resultBuilder.toString())
                         _testResults.value = listOf(text ?: "") + _testResults.value
 
+
                         saveMeasurement(resultID, text ?: "")
                         //_testResults.value = _testResults.value.toMutableList().apply { add(text?:"") }
                         println("CACHO: update  $text, running = ${_isIPerfTestRunningFlow.value}")
