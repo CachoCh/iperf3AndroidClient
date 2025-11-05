@@ -1,6 +1,8 @@
 iPerf3 is a tool for active measurements of the maximum achievable bandwidth on IP networks. It supports tuning of various parameters related to timing, buffers and protocols (TCP, UDP, SCTP with IPv4 and IPv6). For each test it reports the bandwidth, loss, and other parameters.
-For more information, see https://github.com/esnet/iperf, which also includes the iperf3 source code (note that this repository does not include any iperf3 source code).
-iPerf3 Android client
+
+For more information, see <a href='https://github.com/esnet/iperf'>https://github.com/esnet/iperf</a>, which also includes the iperf3 source code (note that this repository does not include any iperf3 source code).
+
+<b>iPerf3 Android client</b>
 
 In general, the app is capable of:
 
