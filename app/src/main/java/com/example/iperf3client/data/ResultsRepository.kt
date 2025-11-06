@@ -49,6 +49,10 @@ class ResultsRepository(application: Context) {
         return resultsDAO.getExecutedTestResult(testID)
     }
 
+    suspend fun getResultsCount(): Int {
+        return resultsDAO.getResultsCount()
+    }
+
     fun deleteExecutedTestsWithResults(executedTest: ExecutedTestConfig) {
         resultsDAO.cascadeDeletionsFromUser(executedTest)
     }

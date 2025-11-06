@@ -111,6 +111,8 @@ fun IperfApp(
     navController: NavHostController = rememberNavController(),
 
     ) {
+    testViewModel.getResultsCount()
+
     NavigationDrawer(navController, testViewModel, context)
 }
 
@@ -298,7 +300,7 @@ fun NavigationDrawer(
                                 IperfScreen.NewTest -> testViewModel.resetTestConfig()
                                 IperfScreen.Measurements -> testViewModel.getExecutedTests()
                                 IperfScreen.RunningTest -> {} //TODO() //testViewModel.testResults = MutableStateFlow(listOf<String>()).asStateFlow()
-                                IperfScreen.Start -> {} //TODO()
+                                IperfScreen.Start -> testViewModel.getResultsCount()
                                 else -> {}
                             }
                             navController.navigate(item.screen.name)

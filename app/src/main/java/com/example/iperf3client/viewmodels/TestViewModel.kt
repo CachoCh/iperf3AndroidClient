@@ -2,10 +2,7 @@ package com.example.iperf3client.viewmodels
 
 
 import android.content.Context
-import android.location.Location
-import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.iperf3client.data.ExecutedTestConfig
@@ -29,7 +26,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.descriptors.PrimitiveKind
 import org.osmdroid.util.GeoPoint
 import java.io.File
 import java.text.SimpleDateFormat
@@ -62,6 +58,7 @@ class TestViewModel(applicationContext: Context, testDB : TestDatabase) : ViewMo
     private val _receiverTransfer = MutableStateFlow("")
     private val _receiverBandwidth = MutableStateFlow("")
 
+    private val _resultsCount = MutableStateFlow(0)
 
     private val _executedTestsList = MutableStateFlow(listOf<ExecutedTestConfig>())
 
@@ -81,6 +78,7 @@ class TestViewModel(applicationContext: Context, testDB : TestDatabase) : ViewMo
     var senderBandwidth = _senderBandwidth.asStateFlow()
     var receiverTransfer = _receiverTransfer.asStateFlow()
     var receiverBandwidth = _receiverBandwidth.asStateFlow()
+    var resultsCount = _resultsCount.asStateFlow()
     var mapMarker = _mapMarkers.asStateFlow()
 
     private var filesDir: File = applicationContext.applicationContext.filesDir
@@ -425,6 +423,12 @@ class TestViewModel(applicationContext: Context, testDB : TestDatabase) : ViewMo
         viewModelScope.launch(ioDispatcher) {
             resultsRepository.deleteExecutedTestsWithResults(executedTestId)
             _executedTestsList.value = resultsRepository.getExecutedTests()
+        }
+    }
+
+    fun getResultsCount() {
+        viewModelScope.launch(ioDispatcher) {
+            _resultsCount.value = resultsRepository.getResultsCount()
         }
     }
 

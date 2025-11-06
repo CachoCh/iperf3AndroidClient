@@ -21,7 +21,7 @@ interface TestDao {
     @Query("SELECT * FROM TestUiState")
     fun getAll(): List<TestUiState>
 
-    @Query("SELECT COUNT(*) FROM TestUiState")
+    @Query("SELECT COUNT(tid) FROM TestUiState")
     fun getTestCount(): Int
 
     @Query("SELECT * FROM TestUiState WHERE tid = :testID ORDER BY tid DESC")

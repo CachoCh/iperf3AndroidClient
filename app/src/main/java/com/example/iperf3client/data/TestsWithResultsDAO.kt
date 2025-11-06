@@ -30,6 +30,9 @@ interface TestsWithResultsDAO {
     @Delete
     fun cascadeDeletionsFromUser(test: ExecutedTestConfig)
 
+    @Transaction
+    @Query("SELECT COUNT(tid) FROM ExecutedTestConfig")
+    suspend fun getResultsCount(): Int
 
 
 }
