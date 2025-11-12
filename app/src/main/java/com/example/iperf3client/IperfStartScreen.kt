@@ -1,30 +1,24 @@
 package com.example.iperf3client
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
-import android.content.ContextWrapper
-import android.content.Intent
 import android.net.Uri
 import android.os.Environment
-import android.util.Log
-import android.widget.Toast
-import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.FilterAlt
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Menu
@@ -51,6 +45,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDrawerState
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -61,12 +56,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.unit.dp
-import androidx.core.app.ActivityCompat.startActivityForResult
-import androidx.core.content.FileProvider
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -78,13 +72,13 @@ import com.example.iperf3client.ui.NewTestScreen
 import com.example.iperf3client.ui.SavedTestsScreen
 import com.example.iperf3client.ui.ui.AboutScreen
 import com.example.iperf3client.ui.ui.RunningTestScreen
+import com.example.iperf3client.ui.ui.TestFilterForm
 import com.example.iperf3client.ui.ui.WelcomeScreen
 import com.example.iperf3client.ui.ui.navigator.NavigationItems
 import com.example.iperf3client.utils.DbUtils
 import com.example.iperf3client.utils.DbUtils.Companion.shareRoomDatabase
 import com.example.iperf3client.viewmodels.TestViewModel
 import kotlinx.coroutines.launch
-import java.io.File
 import java.io.FileInputStream
 
 val EXPORT_DATA_REQUEST = 101
@@ -138,7 +132,7 @@ fun Navigation(
         composable(route = IperfScreen.Start.name) {
             WelcomeScreen(
                 onNewTestButtonClicked = {
-                    testUiState.tid=null
+                    testUiState.tid = null
                     navController.navigate(IperfScreen.NewTest.name)
                 },
                 modifier = Modifier
@@ -352,7 +346,7 @@ fun NavigationDrawer(
                         }
                     },
                     actions = {
-                        DropdownMenu()
+                        DropdownMenu(testViewModel)
                     }
 
                 )
@@ -363,11 +357,13 @@ fun NavigationDrawer(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DropdownMenu() {
+fun DropdownMenu(testViewModel: TestViewModel) {
     val context = LocalContext.current
     var expanded by remember { mutableStateOf(false) }
     var exportUri by remember { mutableStateOf<Uri?>(null) }
+    var showSheet by remember { mutableStateOf(false) }
 
     val exportLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.CreateDocument("application/octet-stream")
@@ -413,9 +409,11 @@ fun DropdownMenu() {
             DropdownMenuItem(
                 text = { Text("Share") },
                 onClick = {
-                    shareRoomDatabase(context,
+                    shareRoomDatabase(
+                        context,
                         TestDatabase.DATABASE_NAME,
-                        launcher)
+                        launcher
+                    )
                 }
             )
             DropdownMenuItem(
@@ -425,8 +423,34 @@ fun DropdownMenu() {
                     exportLauncher.launch(TestDatabase.DATABASE_NAME)
                 }
             )
+
+            DropdownMenuItem(
+                text = {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.FilterAlt,
+                            contentDescription = "Filter",
+                        )
+                        Text("Filter")
+                    }
+                },
+                onClick = {
+                    //expanded = false
+                    showSheet = true
+                }
+            )
         }
+
     }
+
+    TestFilterForm(
+        showSheet = showSheet,
+        onDismiss = { showSheet = false },
+        testViewModel
+    )
 }
 
 /**

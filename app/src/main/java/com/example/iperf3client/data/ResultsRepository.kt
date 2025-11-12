@@ -41,8 +41,31 @@ class ResultsRepository(application: Context) {
         )
     }
 
-    suspend fun getExecutedTests(): List<ExecutedTestConfig> {
-        return resultsDAO.getExecutedTests()
+    /**
+     *  tcp = false
+     *  download = true
+     */
+    suspend fun getExecutedTests(
+        tcp: Boolean = true,
+        udp: Boolean = true,
+        upload: Boolean = true,
+        download: Boolean = true
+    ): List<ExecutedTestConfig> {
+        var _results = mutableListOf<ExecutedTestConfig>()
+        if (tcp && upload) {
+            _results += resultsDAO.getExecutedTests(false, false)
+        }
+        if (tcp && download) {
+            _results += resultsDAO.getExecutedTests(false, true)
+        }
+        if (udp && upload) {
+            _results += resultsDAO.getExecutedTests(true, false)
+        }
+        if (udp && download) {
+            _results += resultsDAO.getExecutedTests(true, true)
+        }
+
+        return _results
     }
 
     suspend fun getExecutedTestResults(testID: Int?): List<String> {

@@ -5,7 +5,6 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
-import kotlinx.serialization.descriptors.PrimitiveKind
 
 @Dao
 interface TestDao {
@@ -18,8 +17,8 @@ interface TestDao {
     @Delete
     fun deleteTest(test: TestUiState)
 
-    @Query("SELECT * FROM TestUiState")
-    fun getAll(): List<TestUiState>
+    @Query("SELECT * FROM TestUiState WHERE udp = :protocol AND reverse = :direction ORDER BY tid DESC")
+    fun getAll(protocol: Boolean, direction: Boolean): List<TestUiState>
 
     @Query("SELECT COUNT(tid) FROM TestUiState")
     fun getTestCount(): Int

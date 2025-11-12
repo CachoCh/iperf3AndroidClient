@@ -130,6 +130,10 @@ dependencies {
     implementation ("org.osmdroid:osmdroid-android:6.1.20")
 
     implementation ("ovh.plrapps:mapcompose:2.16.2")
+    
+    //icons
+    implementation("androidx.compose.material:material-icons-extended:1.7.8")
+
 
 
 }

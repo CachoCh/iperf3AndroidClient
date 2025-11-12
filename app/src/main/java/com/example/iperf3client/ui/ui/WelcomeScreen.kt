@@ -53,6 +53,8 @@ fun WelcomeScreen(
 
     BoxWithConstraints(
         modifier = Modifier.fillMaxSize(),
+
+
         contentAlignment = Alignment.TopCenter
     ) {
         val screenHeight = this.maxHeight

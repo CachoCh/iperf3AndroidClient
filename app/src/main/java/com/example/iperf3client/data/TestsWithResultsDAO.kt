@@ -22,6 +22,10 @@ interface TestsWithResultsDAO {
     @Query("SELECT * FROM ExecutedTestConfig")
     suspend fun getAllTestWithResults(): List<TestWithResults>
     @Transaction
+    @Query("SELECT * FROM ExecutedTestConfig WHERE udp = :protocol AND reverse = :direction ORDER BY tid DESC")
+    suspend fun getExecutedTests(protocol: Boolean, direction: Boolean): List<ExecutedTestConfig>
+
+    @Transaction
     @Query("SELECT * FROM ExecutedTestConfig ORDER BY tid DESC")
     suspend fun getExecutedTests(): List<ExecutedTestConfig>
 

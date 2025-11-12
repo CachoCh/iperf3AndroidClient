@@ -32,7 +32,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
-class TestViewModel(applicationContext: Context, testDB : TestDatabase) : ViewModel() {
+class TestViewModel(applicationContext: Context, testDB: TestDatabase) : ViewModel() {
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
     private val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default
 
@@ -43,10 +43,11 @@ class TestViewModel(applicationContext: Context, testDB : TestDatabase) : ViewMo
     private val networkInfoRepository = NetworkInfoRepository.getInstance(applicationContext)
     private val modelProd: CartesianChartModelProducer = CartesianChartModelProducer()
 
-    private var _mapMarkers = MutableStateFlow(listOf(SpeedMapMarker(GeoPoint(0.0,0.0),0F)))
+    private var _mapMarkers = MutableStateFlow(listOf(SpeedMapMarker(GeoPoint(0.0, 0.0), 0F)))
     private var _transferArray = MutableStateFlow(listOf(0F))
     private var _bwArray = MutableStateFlow(listOf(0F))
     private val _uiStateFlow = MutableStateFlow(newTestConfig())
+    private val _filterStateFlow = MutableStateFlow(FilterState())
     private val _iPerfRequestResultFlow = MutableStateFlow("")
     private var _isIPerfTestRunningFlow = MutableStateFlow(false)
     private var _testResults = MutableStateFlow(listOf<String>())
@@ -63,10 +64,11 @@ class TestViewModel(applicationContext: Context, testDB : TestDatabase) : ViewMo
     private val _executedTestsList = MutableStateFlow(listOf<ExecutedTestConfig>())
 
     var uiState: StateFlow<TestUiState> = _uiStateFlow.asStateFlow()
+    var filterState: StateFlow<FilterState> = _filterStateFlow.asStateFlow()
     var isIPerfTestRunning: StateFlow<Boolean> = _isIPerfTestRunningFlow.asStateFlow()
     var iPerfRequestResult: StateFlow<String> = _iPerfRequestResultFlow.asStateFlow()
     var testList: StateFlow<List<TestUiState>> = _testListFlow.asStateFlow()
-    var testCount: StateFlow<Int> =_testCountFlow.asStateFlow()
+    var testCount: StateFlow<Int> = _testCountFlow.asStateFlow()
     var testResults: StateFlow<List<String>> = _testResults.asStateFlow()
     val locationFlow = locationRepository.locationFlow
     val transferArray: StateFlow<List<Float>> = _transferArray.asStateFlow()
@@ -86,7 +88,7 @@ class TestViewModel(applicationContext: Context, testDB : TestDatabase) : ViewMo
 
     private var resultID: Long = 0
 
-    fun clearTestScreen(){
+    fun clearTestScreen() {
         if (!_isIPerfTestRunningFlow.value) {
             _senderTransfer.value = ""
             _senderBandwidth.value = ""
@@ -97,6 +99,10 @@ class TestViewModel(applicationContext: Context, testDB : TestDatabase) : ViewMo
             modelProducer(_bwArray.value, _transferArray.value)
             locationRepository.tracker.stopLocationUpdates()
         }
+    }
+
+    fun saveFilterState(tcp: Boolean, udp: Boolean, upload: Boolean, download: Boolean) {
+        _filterStateFlow.value = FilterState("", tcp, udp, upload, download)
     }
 
     /**
@@ -151,7 +157,7 @@ class TestViewModel(applicationContext: Context, testDB : TestDatabase) : ViewMo
             udp
         )
         viewModelScope.launch(Dispatchers.IO) { //this: CoroutineScope
-                _uiStateFlow.value = repository.createTest(test)
+            _uiStateFlow.value = repository.createTest(test)
         }
     }
 
@@ -161,11 +167,21 @@ class TestViewModel(applicationContext: Context, testDB : TestDatabase) : ViewMo
         }
     }
 
-    fun getTests() {
+    fun getTests(
+        server: String = "",
+        tcp: Boolean = true,
+        udp: Boolean = true,
+        upload: Boolean = true,
+        download: Boolean = true
+    ) {
+        _testListFlow.value = emptyList()
         viewModelScope.launch(Dispatchers.IO) { //this: CoroutineScope
-            _testListFlow.value = repository.getTests()
-            Log.wtf("CACHO", "TestViewModel:getTests ${_testListFlow.value.size}")
-
+            _testListFlow.value = _testListFlow.value + repository.getTests(
+                _filterStateFlow.value.tcp,
+                _filterStateFlow.value.udp,
+                _filterStateFlow.value.upload,
+                _filterStateFlow.value.download
+            )
         }
     }
 
@@ -193,7 +209,7 @@ class TestViewModel(applicationContext: Context, testDB : TestDatabase) : ViewMo
         context: Context
     ) {
 
-        _mapMarkers.value = listOf(SpeedMapMarker(GeoPoint(0.0,0.0),0F))
+        _mapMarkers.value = listOf(SpeedMapMarker(GeoPoint(0.0, 0.0), 0F))
         _transferArray.value = listOf<Float>() //clear graph
         _bwArray.value = listOf<Float>() //clear graph
         _testResults.value = listOf<String>() // clear lazylist from previous results
@@ -320,16 +336,18 @@ class TestViewModel(applicationContext: Context, testDB : TestDatabase) : ViewMo
             var transfer = ""
             var bandwidth = ""
             if (text.contains(" sender") == true) {
-                _senderTransfer.value = IpersOutputParser.getFinalTransferOrBwValues(text, "transfer")
+                _senderTransfer.value =
+                    IpersOutputParser.getFinalTransferOrBwValues(text, "transfer")
                 _senderBandwidth.value = IpersOutputParser.getFinalTransferOrBwValues(text, "bw")
-                if (!config.download){
+                if (!config.download) {
                     transfer = _senderTransfer.value
                     bandwidth = _senderBandwidth.value
                 }
-            } else  if (text.contains(" receiver") == true){
-                _receiverTransfer.value = IpersOutputParser.getFinalTransferOrBwValues(text, "transfer")
+            } else if (text.contains(" receiver") == true) {
+                _receiverTransfer.value =
+                    IpersOutputParser.getFinalTransferOrBwValues(text, "transfer")
                 _receiverBandwidth.value = IpersOutputParser.getFinalTransferOrBwValues(text, "bw")
-                if (config.download){
+                if (config.download) {
                     transfer = _receiverTransfer.value
                     bandwidth = _receiverBandwidth.value
                 }
@@ -364,7 +382,8 @@ class TestViewModel(applicationContext: Context, testDB : TestDatabase) : ViewMo
             _transferArray.value = _transferArray.value + tr
             _bwArray.value = _bwArray.value + bw
             modelProducer(_bwArray.value, _transferArray.value)
-            _mapMarkers.value = _mapMarkers.value + listOf(SpeedMapMarker(GeoPoint(locationFlow.value),bw.last()))
+            _mapMarkers.value =
+                _mapMarkers.value + listOf(SpeedMapMarker(GeoPoint(locationFlow.value), bw.last()))
         }
     }
 
@@ -408,7 +427,15 @@ class TestViewModel(applicationContext: Context, testDB : TestDatabase) : ViewMo
 
     fun getExecutedTests() {
         viewModelScope.launch(ioDispatcher) {
-            _executedTestsList.value = resultsRepository.getExecutedTests()
+            _executedTestsList.value = emptyList()
+
+            _executedTestsList.value =
+                _executedTestsList.value + resultsRepository.getExecutedTests(
+                    _filterStateFlow.value.tcp,
+                    _filterStateFlow.value.udp,
+                    _filterStateFlow.value.upload,
+                    _filterStateFlow.value.download
+                )
         }
     }
 
@@ -422,7 +449,12 @@ class TestViewModel(applicationContext: Context, testDB : TestDatabase) : ViewMo
     fun deleteExecutedTestsWithResults(executedTestId: ExecutedTestConfig) {
         viewModelScope.launch(ioDispatcher) {
             resultsRepository.deleteExecutedTestsWithResults(executedTestId)
-            _executedTestsList.value = resultsRepository.getExecutedTests()
+            _executedTestsList.value = resultsRepository.getExecutedTests(
+                _filterStateFlow.value.tcp,
+                _filterStateFlow.value.udp,
+                _filterStateFlow.value.upload,
+                _filterStateFlow.value.download
+            )
         }
     }
 
@@ -445,7 +477,16 @@ class TestViewModel(applicationContext: Context, testDB : TestDatabase) : ViewMo
 
 }
 
-class SpeedMapMarker(val location: GeoPoint, val throughput: Float){
+data class FilterState(
+    var server: String = "",
+    var tcp: Boolean = true,
+    var udp: Boolean = true,
+    var upload: Boolean = true,
+    var download: Boolean = true
+) {
+}
+
+class SpeedMapMarker(val location: GeoPoint, val throughput: Float) {
 
 }
 
