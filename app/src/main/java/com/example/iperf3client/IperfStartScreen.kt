@@ -23,7 +23,9 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Output
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.DateRange
@@ -45,7 +47,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDrawerState
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -58,6 +59,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.unit.dp
@@ -406,44 +408,24 @@ fun DropdownMenu(testViewModel: TestViewModel) {
         ) {
             val launcher =
                 rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {}
-            DropdownMenuItem(
-                text = { Text("Share") },
-                onClick = {
-                    shareRoomDatabase(
-                        context,
-                        TestDatabase.DATABASE_NAME,
-                        launcher
-                    )
-                }
-            )
-            DropdownMenuItem(
-                text = { Text("Export DB") },
-                onClick = {
-                    expanded = false
-                    exportLauncher.launch(TestDatabase.DATABASE_NAME)
-                }
-            )
 
-            DropdownMenuItem(
-                text = {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.FilterAlt,
-                            contentDescription = "Filter",
-                        )
-                        Text("Filter")
-                    }
-                },
-                onClick = {
-                    //expanded = false
-                    showSheet = true
-                }
-            )
+            KebabMenuItem("Share", Icons.Filled.Share, {
+                expanded = false
+                shareRoomDatabase(
+                    context,
+                    TestDatabase.DATABASE_NAME,
+                    launcher
+                )
+            })
+            KebabMenuItem("Export DB", Icons.Filled.Output, {
+                expanded = false
+                exportLauncher.launch(TestDatabase.DATABASE_NAME)
+            })
+            KebabMenuItem("Filter", Icons.Filled.FilterAlt, {
+                expanded = false
+                showSheet = true
+            })
         }
-
     }
 
     TestFilterForm(
@@ -469,5 +451,24 @@ private fun getCurrentScreen(navController: NavHostController): IperfScreen {
     // Get the name of the current screen
     return IperfScreen.valueOf(
         backStackEntry?.destination?.route ?: IperfScreen.Start.name
+    )
+}
+
+@Composable
+private fun KebabMenuItem(text: String, icon: ImageVector, onClick: () -> Unit) {
+    DropdownMenuItem(
+        text = {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = "",
+                )
+                Text(text)
+            }
+        },
+        onClick = onClick
     )
 }
