@@ -379,31 +379,30 @@ class TestViewModel(applicationContext: Context, testDB: TestDatabase) : ViewMod
      * returns bw list //TODO: code better
      */
     private fun parseBwThr(iperfResultLine: String): List<Float> {
-        try {
-            if (!iperfResultLine.contains("sender") && !iperfResultLine.contains("receiver")) {
-                val tr = listOf(
-                    IpersOutputParser.getIntermediateTransferOrBwValuesInMBytes(
-                        iperfResultLine,
-                        "transfer"
-                    )
-                )
-                val bw =
-                    listOf(
-                        IpersOutputParser.getIntermediateTransferOrBwValuesInMBytes(
-                            iperfResultLine,
-                            "bw"
-                        )
-                    )
-                _transferArray.value = _transferArray.value + tr
-                _bwArray.value = _bwArray.value + bw
-                Log.wtf("CACHO:", " bw= $bw")
-                return bw
-            }
+        if (iperfResultLine.contains("sender") || iperfResultLine.contains("receiver")) {
+            return listOf(0f)
+        }
+
+        return try {
+            val transfer = IpersOutputParser.getIntermediateTransferOrBwValuesInMBytes(
+                iperfResultLine, "transfer"
+            )
+            val bw = IpersOutputParser.getIntermediateTransferOrBwValuesInMBytes(
+                iperfResultLine, "bw"
+            )
+
+            // Append values (not lists of values)
+            _transferArray.value = _transferArray.value + transfer
+            _bwArray.value = _bwArray.value + bw
+
+            Log.w("CACHO", "bw = $bw")
+            return listOf(bw)
         } catch (e: IllegalStateException) {
+            Log.wtf("CACHO","parsing error $e")
             throw e
         }
-        return listOf(0f)
     }
+
 
     private fun getGraphVals(iperfResultLine: String) {
         val bw = parseBwThr(iperfResultLine)
@@ -512,16 +511,6 @@ class TestViewModel(applicationContext: Context, testDB: TestDatabase) : ViewMod
                 )
         }
     }
-
-    /*fun getExecutedTestResults(testID: Int?) {
-        viewModelScope.launch(ioDispatcher) {
-            _loadedTestResults.value = resultsRepository.getExecutedTestResults(testID)
-            Log.d("CACHO","Results size: ${_loadedTestResults.value.size}")
-            for (result in _loadedTestResults.value) {
-                _testResults.value = _testResults.value + result.measurment
-            }
-        }
-    }*/
 
     fun getExecutedTestResults(testID: Int?) {
         viewModelScope.launch(ioDispatcher) {

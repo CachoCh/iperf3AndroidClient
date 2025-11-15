@@ -37,13 +37,13 @@ regex groups:
         fun getFinalTransferOrBwValues(input: String, value: String): String {
 
             val pattern =
-                "\\[[0-9]+\\]\\s+[0-9]*\\.[0-9]+-[0-9]*\\.[0-9]+\\s+sec\\s+(?<transfer>([+-]?(?=\\.\\d|\\d)(?:\\d+)?(?:\\.?\\d*))(?:[Ee]([+-]?\\d+))?+\\s+[A-Za-z]+)\\s+(?<bw>([+-]?(?=\\.\\d|\\d)(?:\\d+)?(?:\\.?\\d*))(?:[Ee]([+-]?\\d+))?+\\s+[A-Za-z]+)"
+                "\\[\\s*[0-9]+\\]\\s+[0-9]*\\.[0-9]+-[0-9]*\\.[0-9]+\\s+sec\\s+(?<transfer>([+-]?(?=\\.\\d|\\d)(?:\\d+)?(?:\\.?\\d*))(?:[Ee]([+-]?\\d+))?+\\s+[A-Za-z]+)\\s+(?<bw>([+-]?(?=\\.\\d|\\d)(?:\\d+)?(?:\\.?\\d*))(?:[Ee]([+-]?\\d+))?+\\s+[A-Za-z]+)"
             return getTransferOrBwValues(input, value, pattern)
         }
 
         private fun getIntermediateTransferOrBwValues(input: String, value: String): String {
             val pattern =
-                "\\[[0-9]+\\]\\s+[0-9]*\\.[0-9]+-[0-9]*\\.[0-9]+\\s+sec\\s+(?<transfer>([+-]?(?=\\.\\d|\\d)(?:\\d+)?(?:\\.?\\d*))(?:[Ee]([+-]?\\d+))?)\\s+(?<transferUnits>[A-Za-z]+)\\s+(?<bw>([+-]?(?=\\.\\d|\\d)(?:\\d+)?(?:\\.?\\d*))(?:[Ee]([+-]?\\d+))?) (?<bwUnits>[A-Za-z]+/[A-Za-z]+)"
+                "\\[\\s*[0-9]+\\]\\s+[0-9]*\\.[0-9]+-[0-9]*\\.[0-9]+\\s+sec\\s+(?<transfer>([+-]?(?=\\.\\d|\\d)(?:\\d+)?(?:\\.?\\d*))(?:[Ee]([+-]?\\d+))?)\\s+(?<transferUnits>[A-Za-z]+)\\s+(?<bw>([+-]?(?=\\.\\d|\\d)(?:\\d+)?(?:\\.?\\d*))(?:[Ee]([+-]?\\d+))?) (?<bwUnits>[A-Za-z]+/[A-Za-z]+)"
             return getTransferOrBwValues(input, value, pattern)
         }
 
@@ -63,7 +63,6 @@ regex groups:
 
                 return value
             } catch (e: Exception) {
-                //return 0f //TODO: change this so there is no trailing 0s in the graph
                 throw IllegalStateException("Iperf line is not a result or parsed wrong: $input")
             }
         }

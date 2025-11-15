@@ -70,7 +70,7 @@ data class ParsedLine(
 
 fun parseLine(line: String): ParsedLine? {
     // \[139\]  10\.01-11\.01  sec\s 5\.53 [A-Za-z0-9]+  46\.4 Mbits/sec
-    val regex = """\[(\d+)]\s+(\d+\.\d+)-(\d+\.\d+)\s+sec\s+(\d+\.\d+)\s+([A-Za-z0-9]+)\s+(\d+\.\d+)\s([A-Za-z]+/[A-Za-z]+)""".toRegex()
+    val regex = """\[\s*(\d+)]\s+(\d+\.\d+)-(\d+\.\d+)\s+sec\s+(\d+\.\d+)\s+([A-Za-z0-9]+)\s+(\d+\.\d+)\s([A-Za-z]+/[A-Za-z]+)""".toRegex()
 
     val matchResult = regex.find(line)
 
