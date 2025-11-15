@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.iperf3client.data.ExecutedTestConfig
 import com.example.iperf3client.data.LocationRepository
+import com.example.iperf3client.data.MeasLatLon
 import com.example.iperf3client.data.NetworkInfoRepository
 import com.example.iperf3client.data.ResultsRepository
 import com.example.iperf3client.data.TestDatabase
@@ -31,6 +32,7 @@ import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+import kotlin.collections.last
 
 class TestViewModel(applicationContext: Context, testDB: TestDatabase) : ViewModel() {
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
@@ -51,6 +53,7 @@ class TestViewModel(applicationContext: Context, testDB: TestDatabase) : ViewMod
     private val _iPerfRequestResultFlow = MutableStateFlow("")
     private var _isIPerfTestRunningFlow = MutableStateFlow(false)
     private var _testResults = MutableStateFlow(listOf<String>())
+    private var _loadedTestResults = MutableStateFlow(listOf<MeasLatLon>())
     private val _testListFlow = MutableStateFlow(listOf<TestUiState>())
     private val _testCountFlow = MutableStateFlow(0)
     private val _modelProducer = MutableStateFlow(modelProd)
@@ -372,20 +375,91 @@ class TestViewModel(applicationContext: Context, testDB: TestDatabase) : ViewMod
     }
 
 
-    private fun getGraphVals(text: String) {
-        if (!text.contains("sender") && !text.contains("receiver")) {
-            val tr = listOf(
-                IpersOutputParser.getIntermediateTransferOrBwValuesInMBytes(text, "transfer")
-            )
-            val bw =
-                listOf(IpersOutputParser.getIntermediateTransferOrBwValuesInMBytes(text, "bw"))
-            _transferArray.value = _transferArray.value + tr
-            _bwArray.value = _bwArray.value + bw
-            modelProducer(_bwArray.value, _transferArray.value)
+    /**
+     * returns bw list //TODO: code better
+     */
+    private fun parseBwThr(iperfResultLine: String): List<Float> {
+        try {
+            if (!iperfResultLine.contains("sender") && !iperfResultLine.contains("receiver")) {
+                val tr = listOf(
+                    IpersOutputParser.getIntermediateTransferOrBwValuesInMBytes(
+                        iperfResultLine,
+                        "transfer"
+                    )
+                )
+                val bw =
+                    listOf(
+                        IpersOutputParser.getIntermediateTransferOrBwValuesInMBytes(
+                            iperfResultLine,
+                            "bw"
+                        )
+                    )
+                _transferArray.value = _transferArray.value + tr
+                _bwArray.value = _bwArray.value + bw
+                Log.wtf("CACHO:", " bw= $bw")
+                return bw
+            }
+        } catch (e: IllegalStateException) {
+            throw e
+        }
+        return listOf(0f)
+    }
+
+    private fun getGraphVals(iperfResultLine: String) {
+        val bw = parseBwThr(iperfResultLine)
+        modelProducer(_bwArray.value, _transferArray.value) // build graph
+        if (bw.isNotEmpty()) { // add point to map
             _mapMarkers.value =
-                _mapMarkers.value + listOf(SpeedMapMarker(GeoPoint(locationFlow.value), bw.last()))
+                _mapMarkers.value + listOf(
+                    SpeedMapMarker(
+                        GeoPoint(locationFlow.value),
+                        bw.last()
+                    )
+                )
         }
     }
+
+    private fun clearResultsLists(){
+        _loadedTestResults.value = emptyList()
+        _transferArray.value = emptyList()
+        _bwArray.value = emptyList()
+        _mapMarkers.value = emptyList()
+        _testResults.value = emptyList()
+        modelProducer(listOf(0f), listOf(0f))
+    }
+
+    //used to load existing results
+    fun loadGraphAndMapExistingResults(tid: Int?) {
+        clearResultsLists()
+        getExecutedTestResults(tid)
+    }
+
+    private fun getGraphMapVals(results: List<MeasLatLon>) {
+
+        val newMarkers = results.mapNotNull { result ->
+            try {
+                val bw = parseBwThr(result.measurment)
+                if (bw.isEmpty()) return@mapNotNull null
+
+                SpeedMapMarker(
+                    GeoPoint(result.latitude, result.longitude),
+                    bw.last()
+                )
+            } catch (e: IllegalStateException) {
+                Log.wtf("CACHO", e.message ?: "Unknown error")
+                null
+            }
+        }
+
+        // Perform a single atomic update instead of inside the loop
+        _mapMarkers.value = _mapMarkers.value + newMarkers
+
+        // Build graph only once at the end
+        if (_bwArray.value.isNotEmpty() || _transferArray.value.isNotEmpty()) {
+            modelProducer(_bwArray.value, _transferArray.value)
+        }
+    }
+
 
     fun resetTestConfig() {
         _uiStateFlow.value = newTestConfig()
@@ -439,12 +513,29 @@ class TestViewModel(applicationContext: Context, testDB: TestDatabase) : ViewMod
         }
     }
 
-    fun getExecutedTestResults(testID: Int?) {
-        _testResults.value = listOf<String>()
+    /*fun getExecutedTestResults(testID: Int?) {
         viewModelScope.launch(ioDispatcher) {
-            _testResults.value = resultsRepository.getExecutedTestResults(testID)
+            _loadedTestResults.value = resultsRepository.getExecutedTestResults(testID)
+            Log.d("CACHO","Results size: ${_loadedTestResults.value.size}")
+            for (result in _loadedTestResults.value) {
+                _testResults.value = _testResults.value + result.measurment
+            }
+        }
+    }*/
+
+    fun getExecutedTestResults(testID: Int?) {
+        viewModelScope.launch(ioDispatcher) {
+                        val results = resultsRepository.getExecutedTestResults(testID)
+            _loadedTestResults.value = _loadedTestResults.value + results
+            Log.d("CACHO", "Results size: ${results.size}")
+            // Build a new list from measurement values
+            val measurements = results.map { it.measurment }
+            _testResults.value = _testResults.value + measurements
+
+            getGraphMapVals(_loadedTestResults.value)
         }
     }
+
 
     fun deleteExecutedTestsWithResults(executedTestId: ExecutedTestConfig) {
         viewModelScope.launch(ioDispatcher) {

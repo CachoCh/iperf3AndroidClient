@@ -64,11 +64,11 @@ class ResultsRepository(application: Context) {
         if (udp && download) {
             _results += resultsDAO.getExecutedTests(true, true)
         }
-
+//TODO: sort list by tid
         return _results
     }
 
-    suspend fun getExecutedTestResults(testID: Int?): List<String> {
+    suspend fun getExecutedTestResults(testID: Int?): List<MeasLatLon> {
         return resultsDAO.getExecutedTestResult(testID)
     }
 

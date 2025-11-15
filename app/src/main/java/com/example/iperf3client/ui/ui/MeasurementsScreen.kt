@@ -61,7 +61,8 @@ fun MeasurementsScreen(
                 testViewModel.deleteExecutedTestsWithResults(
                     executedTest
                 )
-            }, onItemClick
+            },
+            onItemClick
         )
     }
 }

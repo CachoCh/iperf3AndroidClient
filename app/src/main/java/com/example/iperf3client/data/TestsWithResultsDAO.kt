@@ -29,8 +29,8 @@ interface TestsWithResultsDAO {
     @Query("SELECT * FROM ExecutedTestConfig ORDER BY tid DESC")
     suspend fun getExecutedTests(): List<ExecutedTestConfig>
 
-    @Query("SELECT measurment FROM ExecutedTestResults WHERE tid = :testID ORDER BY tid DESC" )
-    suspend fun getExecutedTestResult(testID: Int?): List<String>
+    @Query("SELECT measurment, latitude, longitude  FROM ExecutedTestResults WHERE tid = :testID ORDER BY tid DESC" )
+    suspend fun getExecutedTestResult(testID: Int?): List<MeasLatLon>
     @Delete
     fun cascadeDeletionsFromUser(test: ExecutedTestConfig)
 
@@ -40,3 +40,9 @@ interface TestsWithResultsDAO {
 
 
 }
+
+data class MeasLatLon(
+    val measurment: String,
+    val latitude: Double,
+    val longitude: Double
+)

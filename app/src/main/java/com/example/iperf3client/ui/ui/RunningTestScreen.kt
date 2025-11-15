@@ -24,11 +24,7 @@ fun RunningTestScreen(
 ) {
     val testResults by testViewModel.testResults.collectAsState()
     val modelProducer by testViewModel.modelProducer.collectAsState()
-
-
     TabScreen(testViewModel, testResults, modelProducer)
-    //ResultsList(testResults)
-
 }
 
 @Composable

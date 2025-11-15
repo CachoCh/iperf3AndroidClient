@@ -1,5 +1,6 @@
 package com.example.iperf3client.ui.ui
 
+import android.location.Location
 import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,6 +21,7 @@ import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
+import kotlin.collections.plus
 
 
 @Composable
@@ -38,9 +40,12 @@ fun MapScreen(
 fun OsmdroidMapView(testViewModel: TestViewModel) {
     val context = LocalContext.current
     val mapMarker by testViewModel.mapMarker.collectAsState()
+    if (mapMarker.isEmpty()) return
+
     // Save center location and zoom level
     var mapCenter by rememberSaveable {mutableStateOf(mapMarker.last().location)}
     var zoomLevel by rememberSaveable {mutableStateOf(20.0)}
+
 
     AndroidView(
         modifier = Modifier.fillMaxSize(),

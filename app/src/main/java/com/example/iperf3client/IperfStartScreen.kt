@@ -203,7 +203,7 @@ fun Navigation(
                     cancelOrderAndNavigateToStart(navController)
                 },
                 onItemClick = { tid ->
-                    testVM.getExecutedTestResults(tid)
+                    testVM.loadGraphAndMapExistingResults(tid)
                     navController.navigate(IperfScreen.RunningTest.name)
                 },
                 modifier = Modifier
