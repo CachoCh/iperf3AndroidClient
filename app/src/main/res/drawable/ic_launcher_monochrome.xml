@@ -1,0 +1,22 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Gauge arc -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M18,60a36,36 0 1,1 72,0h-8a28,28 0 1,0 -56,0h-8z" />
+
+    <!-- Center circle -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M54,54a10,10 0 1,1 -0.01,0z" />
+
+    <!-- Needle -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M54,54l22,10l-3,6l-21,-10z" />
+
+</vector>
