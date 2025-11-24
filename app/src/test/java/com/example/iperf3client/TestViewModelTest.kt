@@ -104,7 +104,7 @@ class TestViewModelTest {
     @Test
     fun `saveUpdateTest should call updateTest if tid is not null`() = runTest {
         // Arrange
-        val existingTest = TestUiState(
+        TestUiState(
             tid = 1,
             server = "192.168.1.1",
             port = 8080,
