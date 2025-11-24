@@ -1,5 +1,4 @@
 import org.gradle.api.JavaVersion.VERSION_11
-import org.gradle.kotlin.dsl.androidTestImplementation
 
 plugins {
     alias(libs.plugins.android.application)
@@ -35,6 +34,7 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = VERSION_11
         targetCompatibility = VERSION_11
@@ -42,6 +42,7 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+
     buildFeatures {
         compose = true
     }
@@ -50,90 +51,71 @@ android {
         unitTests.isReturnDefaultValues = true
     }
 
-    android {
-        dependenciesInfo {
-            // Disables dependency metadata when building APKs (for IzzyOnDroid/F-Droid)
-            includeInApk = false
-            // Disables dependency metadata when building Android App Bundles (for Google Play)
-            includeInBundle = false
-        }
+    dependenciesInfo {
+        // Disable dependency metadata in APKs and Bundles (for F-Droid/Google Play)
+        includeInApk = false
+        includeInBundle = false
     }
 }
 
 dependencies {
+    // AndroidX Core
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
-    implementation(platform(libs.androidx.compose.bom))
+
+    // Compose
+    implementation(platform(libs.compose.bom))
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    implementation("androidx.navigation:navigation-runtime-android:2.9.0-alpha09")
-    implementation("androidx.navigation:navigation-compose:2.8.9")
-
-    testImplementation("androidx.test:runner:1.6.1")
-
-    val room_version = "2.6.1"
-    implementation("androidx.room:room-runtime:$room_version")
-
-    // If this project uses any Kotlin source, use Kotlin Symbol Processing (KSP)
-    // See Add the KSP plugin to your project
-    ksp("androidx.room:room-compiler:$room_version")
-    // optional - Kotlin Extensions and Coroutines support for Room
-    implementation("androidx.room:room-ktx:$room_version")
-    // optional - Test helpers
-    testImplementation("androidx.room:room-testing:$room_version")
-    // optional - Paging 3 Integration
-    implementation("androidx.room:room-paging:$room_version")
-
-
-
-    testImplementation(libs.junit)
-    testImplementation("org.robolectric:robolectric:4.13")
-
-///
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    androidTestImplementation(libs.androidx.ui.test.junit4)
 
-    testImplementation("androidx.test:core:1.6.1")
-    testImplementation("org.mockito:mockito-junit-jupiter:5.2.0") //Optional
+    // Navigation
+    implementation(libs.navigation.runtime)
+    implementation(libs.navigation.compose)
 
-    // MockK for unit testing
-    testImplementation("io.mockk:mockk:1.13.7")
+    // Room
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    ksp(libs.room.compiler)
+    implementation(libs.room.paging)
+    testImplementation(libs.room.testing)
 
-    testImplementation("androidx.arch.core:core-testing:2.2.0")
-    testImplementation("app.cash.turbine:turbine:1.0.0")
-    //testImplementation("androidx.test:runner:1.6.2")
+    // WorkManager
+    implementation(libs.work.runtime.ktx)
 
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.1")
+    // Vico
+    implementation(libs.vico.core)
+    implementation(libs.vico.compose)
+    implementation(libs.vico.compose.m3)
+    implementation(libs.vico.compose.m2)
 
-    testImplementation("org.mockito:mockito-junit-jupiter:5.2.0") //Optional
-    testImplementation("org.mockito:mockito-core:5.2.0")
+    // Iperf
+    implementation(libs.iperf)
 
-    val vicoVersion = "2.1.1"
+    // Maps
+    implementation(libs.osmdroid)
+    implementation(libs.mapcompose)
 
-    implementation("com.patrykandpatrick.vico:core:$vicoVersion")
-    implementation("com.patrykandpatrick.vico:compose:$vicoVersion")
-    implementation("com.patrykandpatrick.vico:compose-m3:$vicoVersion")
-    implementation("com.patrykandpatrick.vico:compose-m2:$vicoVersion")
+    // Icons
+    implementation(libs.material.icons.extended)
 
-    implementation("com.synaptic-tools:iperf:1.0.0")
-    implementation ("androidx.work:work-runtime-ktx:2.10.0")
+    // Testing
+    testImplementation(libs.junit)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.androidx.test.core)
+    testImplementation(libs.mockk)
+    testImplementation(libs.coroutines.test)
+    testImplementation(libs.mockito.core)
+    testImplementation(libs.mockito.junit.jupiter)
+    testImplementation(libs.arch.core.testing)
+    testImplementation(libs.turbine)
 
-    //map
-    // origin version of osm android. You may be able to customize the version.
-    implementation ("org.osmdroid:osmdroid-android:6.1.20")
-
-    implementation ("ovh.plrapps:mapcompose:2.16.2")
-    
-    //icons
-    implementation("androidx.compose.material:material-icons-extended:1.7.8")
-
-
-
+    // Android Instrumentation
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
 }
