@@ -2,22 +2,25 @@ package com.example.iperf3client.data
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.Context.CONNECTIVITY_SERVICE
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.telephony.TelephonyManager
 
 class NetworkInfoRepository(private val context: Context) {
+
+    private val appContext = context.applicationContext
+
     private val connectivityManager =
-        context.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
+        appContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
     fun getNetworkType(): String {
-
-        return getNetwork(connectivityManager, context)
+        return getNetwork(connectivityManager, appContext)
     }
 
     companion object {
-        @Volatile private var instance: NetworkInfoRepository? = null
+        @Volatile
+        private var instance: NetworkInfoRepository? = null
+
         fun getInstance(application: Context) =
             instance ?: synchronized(this) {
                 instance ?: NetworkInfoRepository(application).also { instance = it }

@@ -48,7 +48,7 @@ class MainActivity : ComponentActivity() {
             addSampleTestsToDB(testViewModel)
         }
         if (shouldAskPermissions()) {
-            askPermissions(this);
+            askPermissions(this)
         }
 
     }

@@ -15,5 +15,4 @@ data class TestUiState(
     @ColumnInfo(name = "output") var output: String,
     @ColumnInfo(name = "favourite") var fav: Boolean,
     @ColumnInfo(name = "udp", defaultValue = "false") var udp: Boolean
-) {
-}
+)

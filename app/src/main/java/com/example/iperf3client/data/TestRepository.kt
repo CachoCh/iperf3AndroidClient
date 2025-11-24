@@ -4,20 +4,20 @@ package com.example.iperf3client.data
 class TestRepository(database: TestDatabase) {
 
     var testDao: TestDao = database.testDao()
-    suspend fun createTest(test: TestUiState): TestUiState {
+    fun createTest(test: TestUiState): TestUiState {
         testDao.insertAll(test)
         return getLastTests()//TODO: check if there is a better way to do this
     }
 
-    suspend fun updateTest(test: TestUiState) {
+    fun updateTest(test: TestUiState) {
         testDao.updateTest(test)
     }
 
-    suspend fun deleteTest(test: TestUiState) {
+    fun deleteTest(test: TestUiState) {
         testDao.deleteTest(test)
     }
 
-    suspend fun getTests(
+    fun getTests(
         tcp: Boolean = true,
         udp: Boolean = true,
         upload: Boolean = true,

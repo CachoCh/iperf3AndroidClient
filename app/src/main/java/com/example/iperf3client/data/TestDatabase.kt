@@ -24,16 +24,6 @@ abstract class TestDatabase : RoomDatabase() {
         const val DATABASE_NAME = "iperf3_database"
 
         @Synchronized
-        fun exists():Boolean {
-           return instance != null
-        }
-
-        @Synchronized
-        fun getDBPath(ctx: Context):String {
-            return ctx.getDatabasePath(DATABASE_NAME).absolutePath
-        }
-
-        @Synchronized
         fun getInstance(ctx: Context): TestDatabase {
             if(instance == null) {
                 instance = Room.databaseBuilder(

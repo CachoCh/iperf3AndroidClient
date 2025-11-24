@@ -69,13 +69,10 @@ class TestViewModel(applicationContext: Context, testDB: TestDatabase) : ViewMod
     var uiState: StateFlow<TestUiState> = _uiStateFlow.asStateFlow()
     var filterState: StateFlow<FilterState> = _filterStateFlow.asStateFlow()
     var isIPerfTestRunning: StateFlow<Boolean> = _isIPerfTestRunningFlow.asStateFlow()
-    var iPerfRequestResult: StateFlow<String> = _iPerfRequestResultFlow.asStateFlow()
     var testList: StateFlow<List<TestUiState>> = _testListFlow.asStateFlow()
     var testCount: StateFlow<Int> = _testCountFlow.asStateFlow()
     var testResults: StateFlow<List<String>> = _testResults.asStateFlow()
     val locationFlow = locationRepository.locationFlow
-    val transferArray: StateFlow<List<Float>> = _transferArray.asStateFlow()
-    val bwArray: StateFlow<List<Float>> = _bwArray.asStateFlow()
     var modelProducer = _modelProducer.asStateFlow()
     var executedTestsList: StateFlow<List<ExecutedTestConfig>> = _executedTestsList.asStateFlow()
 
@@ -263,7 +260,7 @@ class TestViewModel(applicationContext: Context, testDB: TestDatabase) : ViewMod
 
     private fun getFormattedTime(): String {
         val calendar: Calendar = Calendar.getInstance()
-        val dateFormatter: SimpleDateFormat =
+        val dateFormatter =
             SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.getDefault())
         return dateFormatter.format(calendar.getTime())
     }
@@ -472,7 +469,6 @@ class TestViewModel(applicationContext: Context, testDB: TestDatabase) : ViewMod
     private fun saveResultsTestConfig(testConfig: ExecutedTestConfig) {
         viewModelScope.launch(ioDispatcher) { //this: CoroutineScope
             resultID = resultsRepository.createTestConfig(testConfig)
-            System.out.println("CACHO: $resultID")
         }
     }
 
@@ -563,12 +559,9 @@ data class FilterState(
     var udp: Boolean = true,
     var upload: Boolean = true,
     var download: Boolean = true
-) {
-}
+)
 
-class SpeedMapMarker(val location: GeoPoint, val throughput: Float) {
-
-}
+class SpeedMapMarker(val location: GeoPoint, val throughput: Float)
 
 
 

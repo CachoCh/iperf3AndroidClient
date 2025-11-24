@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.room.util.TableInfo
 import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
 import com.patrykandpatrick.vico.compose.cartesian.axis.rememberAxisLabelComponent
 import com.patrykandpatrick.vico.compose.cartesian.axis.rememberBottom
@@ -20,41 +19,14 @@ import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
 
 @Composable
 fun ChartScreen(modelProducer: CartesianChartModelProducer, testResults: List<String>) {
-    Column() {
+    Column {
         CartesianChartHost(
             modifier = Modifier,
             chart =
                 rememberCartesianChart(
                     rememberLineCartesianLayer(),
-                    /* listOf(
-                     rememberLineSpec(
-                         DynamicShader.color(Color.Green)
-                     ),
-                     rememberLineSpec(DynamicShader.color(Color.Blue))
-                 )
-             ),*/
                     startAxis = VerticalAxis.rememberStart(label = rememberAxisLabelComponent(color = Color.Green)),
-                    //legend = rememberLegend(),
-                    /*endAxis = rememberEndAxis(
-                    label = rememberAxisLabelComponent(color = Color.Blue)
-                ),*/
                     bottomAxis = HorizontalAxis.rememberBottom(),
-
-                    /*decorations =
-                listOf(
-                    rememberHorizontalLine(
-                        y = { 2f },
-                        line = rememberLineComponent(color = Color.Red, thickness = 2.dp),
-                        labelComponent =
-                        rememberTextComponent(Color.Red, padding = Dimensions.of(horizontal = 8.dp)),
-                    ),
-                    rememberHorizontalLine(
-                        y = { 3f },
-                        line = rememberLineComponent(color = Color.Yellow, thickness = 2.dp),
-                        labelComponent =
-                        rememberTextComponent(Color.Yellow, padding = Dimensions.of(horizontal = 8.dp)),
-                    )
-                ),*/
                 ),
             modelProducer = modelProducer,
             scrollState = rememberVicoScrollState(

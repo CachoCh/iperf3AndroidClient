@@ -21,14 +21,12 @@ data class ExecutedTestConfig(
 )
 
 @Entity(
-    foreignKeys = arrayOf(
-        ForeignKey(
-            entity = ExecutedTestConfig::class,
-            parentColumns = arrayOf("tid"),
-            childColumns = arrayOf("tid"),
-            onDelete = ForeignKey.CASCADE
-        )
-    )
+    foreignKeys = [ForeignKey(
+        entity = ExecutedTestConfig::class,
+        parentColumns = arrayOf("tid"),
+        childColumns = arrayOf("tid"),
+        onDelete = ForeignKey.CASCADE
+    )]
 )
 data class ExecutedTestResults(
     @ColumnInfo(index = true) var tid: Int,

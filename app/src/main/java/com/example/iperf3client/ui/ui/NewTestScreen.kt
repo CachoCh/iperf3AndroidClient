@@ -1,10 +1,5 @@
 package com.example.iperf3client.ui
 
-//import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLineSpec
-//import com.patrykandpatrick.vico.compose.common.of
-//import com.patrykandpatrick.vico.compose.common.shader.color
-//import com.patrykandpatrick.vico.core.common.Dimensions
-//common.shader.DynamicShader
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -36,9 +31,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.core.text.isDigitsOnly
-import com.example.iperf3client.ui.ui.ChartScreen
-import com.example.iperf3client.ui.ui.IperfRawOutputScreen
-import com.example.iperf3client.ui.ui.ResultsListScreen
 import com.example.iperf3client.ui.ui.ResultsTableScreen
 import com.example.iperf3client.viewmodels.TestViewModel
 
@@ -54,7 +46,6 @@ fun NewTestScreen(
     val testResults by testViewModel.testResults.collectAsState()
     val testUiState by testViewModel.uiState.collectAsState()
     val isTestRunningState by testViewModel.isIPerfTestRunning.collectAsState()
-    val modelProducer by testViewModel.modelProducer.collectAsState()
     val senderTransfer by testViewModel.enderTransfer.collectAsState()
     val senderBandwidth by testViewModel.senderBandwidth.collectAsState()
     val receiverTransfer by testViewModel.receiverTransfer.collectAsState()
@@ -242,12 +233,12 @@ fun NewTestScreen(
 
         Spacer(Modifier.height(10.dp))
 
-        Row() {
+        Row {
             Text("Sender:", modifier = Modifier.weight(1f))
             Text("Transfer \n$senderTransfer", modifier = Modifier.weight(2f))
             Text("Bandwidth \n$senderBandwidth", modifier = Modifier.weight(2f))
         }
-        Row() {
+        Row {
             Text("Receiver:", modifier = Modifier.weight(1f))
             Text("Transfer \n$receiverTransfer", modifier = Modifier.weight(2f))
             Text("Bandwidth \n$receiverBandwidth", modifier = Modifier.weight(2f))

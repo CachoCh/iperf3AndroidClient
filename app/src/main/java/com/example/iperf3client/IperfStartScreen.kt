@@ -83,8 +83,6 @@ import com.example.iperf3client.viewmodels.TestViewModel
 import kotlinx.coroutines.launch
 import java.io.FileInputStream
 
-val EXPORT_DATA_REQUEST = 101
-
 /**
  * enum values that represent the screens in the app
  */
@@ -409,22 +407,22 @@ fun DropdownMenu(testViewModel: TestViewModel) {
             val launcher =
                 rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {}
 
-            KebabMenuItem("Share", Icons.Filled.Share, {
+            KebabMenuItem("Share", Icons.Filled.Share) {
                 expanded = false
                 shareRoomDatabase(
                     context,
                     TestDatabase.DATABASE_NAME,
                     launcher
                 )
-            })
-            KebabMenuItem("Export DB", Icons.Filled.Output, {
+            }
+            KebabMenuItem("Export DB", Icons.Filled.Output) {
                 expanded = false
                 exportLauncher.launch(TestDatabase.DATABASE_NAME)
-            })
-            KebabMenuItem("Filter", Icons.Filled.FilterAlt, {
+            }
+            KebabMenuItem("Filter", Icons.Filled.FilterAlt) {
                 expanded = false
                 showSheet = true
-            })
+            }
         }
     }
 
@@ -435,9 +433,6 @@ fun DropdownMenu(testViewModel: TestViewModel) {
     )
 }
 
-/**
- * Resets the [OrderUiState] and pops up to [CupcakeScreen.Start]
- */
 private fun cancelOrderAndNavigateToStart(
     navController: NavHostController
 ) {

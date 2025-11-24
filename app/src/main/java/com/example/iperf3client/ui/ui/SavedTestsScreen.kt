@@ -67,11 +67,11 @@ fun SavedTestsScreen(
                         },
                     elevation = CardDefaults.cardElevation(10.dp),
                 ) {
-                    Row() {
+                    Row {
                         Column(modifier = Modifier.weight(4f)) {
                             Text(text = "Test: ${item.tid.toString() ?: "New"}")
                             Text(text = "${item.server}: ${item.port}")
-                            Row() {
+                            Row {
                                 Text(text = if (item.reverse) "Download" else "Upload", Modifier.weight(1f))
                                 Text(text = if (item.udp) "UDP" else "TCP", Modifier.weight(1f))
                             }
@@ -109,13 +109,4 @@ fun SavedTestsScreen(
         }
     }
 
-}
-
-@Composable
-fun DynamicListScreen(items: List<TestUiState>) {
-    LazyColumn {
-        items(items) { item ->
-            Text(text = item.tid.toString())
-        }
-    }
 }
