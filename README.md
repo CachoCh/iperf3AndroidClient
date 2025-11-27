@@ -52,6 +52,9 @@ The Android iPerf3 client app comes with 4 presaved servers configured
   <a href="https://apt.izzysoft.de/packages/com.example.iperf3client">
     <img src="./assets/images/IzzyOnDroid.png" alt="IzzyOnDroid" width="150"/>
   </a>
+ <a href="https://f-droid.org/en/packages/com.example.iperf3client">
+    <img src="./assets/images/get-it-on.png" alt="F-Droid" width="150"/>
+  </a>
   <a href="https://github.com/robinsrk/Flip_2_DND/releases/">
     <img src="./assets/images/getItGithub.png" alt="GitHub" width="150"/>
   </a>
